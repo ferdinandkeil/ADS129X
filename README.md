@@ -19,8 +19,13 @@ When multiple devices share the SPI bus you will want to use polling mode as not
 Two example sketches are included. One transfers the data to a PC via a serial connection, the other uses a nRF8001 BTLE chip to send it to a phone. Both were tested using a custom board including an Olimex nRF8001 breakout and a Teensy 3.1.
 
 Libraries required by the sketches:
+<<<<<<< HEAD
 * [github.com/PaulStoffregen/Adafruit_nRF8001/](https://github.com/PaulStoffregen/Adafruit_nRF8001/tree/bb385aed176389d806016617a18d7e347074bc3c)
 * [github.com/duff2013/LowPower_Teensy3/](https://github.com/duff2013/LowPower_Teensy3/tree/721e3bcab47cc7cdb03f0aee9e11d47611430aa9)
+=======
+* https://github.com/PaulStoffregen/Adafruit_nRF8001/tree/bb385aed176389d806016617a18d7e347074bc3c
+* https://github.com/duff2013/LowPower_Teensy3/tree/721e3bcab47cc7cdb03f0aee9e11d47611430aa9
+>>>>>>> ce761c19282377e1977fa6c75bc22ccb88d027fc
 
 License
 -------
