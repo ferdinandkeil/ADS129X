@@ -94,6 +94,9 @@
 #define ADS129X_BIT_TEST_AMP   0x2
 #define ADS129X_BIT_TEST_FREQ1 0x1
 #define ADS129X_BIT_TEST_FREQ0 0x0
+#define ADS129X_TEST_FREQ_1HZ  0x0
+#define ADS129X_TEST_FREQ_2HZ  0x1
+#define ADS129X_TEST_FREQ_DC   0x3
 
 // Configuration Register 3
 #define ADS129X_BIT_PD_REFBUF     0x7
