@@ -131,6 +131,7 @@ void ADS129X::STOP() {
     SPI.transfer(ADS129X_CMD_STOP);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();
 }
 
 /**
