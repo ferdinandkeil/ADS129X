@@ -42,14 +42,14 @@ ADS129X::ADS129X(int _DRDY, int _CS) {
     // SPI Setup
     SPI.begin();
 
-    // set clock divider
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
+    // // set clock divider
+    // SPI.setClockDivider(SPI_CLOCK_DIV2);
 
-    // set data mode
-    SPI.setDataMode(SPI_MODE1); //clock polarity = 0; clock phase = 1 (pg. 8)
+    // // set data mode
+    // SPI.setDataMode(SPI_MODE1); //clock polarity = 0; clock phase = 1 (pg. 8)
 
-    // set bit order
-    SPI.setBitOrder(MSBFIRST); //SPI data format is MSB (pg. 25)
+    // // set bit order
+    // SPI.setBitOrder(MSBFIRST); //SPI data format is MSB (pg. 25)
 
     // initialize the  data ready and chip select pins:
     DRDY = _DRDY;
@@ -70,42 +70,50 @@ ADS129X::ADS129X(int _DRDY, int _CS) {
  * Exit Standby Mode.
  */
 void ADS129X::WAKEUP() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1)); 
     digitalWrite(CS, LOW); //Low to communicate
     SPI.transfer(ADS129X_CMD_WAKEUP);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH); //High to end communication
     delayMicroseconds(2);  //must way at least 4 tCLK cycles before sending another command (Datasheet, pg. 38)
+    SPI.endTransaction();
 }
 
 /**
  * Enter Standby Mode.
  */
 void ADS129X::STANDBY() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_STANDBY);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();    
 }
 
 /**
  * Reset Registers to Default Values.
  */
 void ADS129X::RESET() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_RESET);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
     delay(10); //must wait 18 tCLK cycles to execute this command (Datasheet, pg. 38)
+    SPI.endTransaction();    
 }
 
 /**
  * Start/restart (synchronize) conversions.
  */
 void ADS129X::START() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_START);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();    
 #ifndef ADS129X_POLLING
     attachInterrupt(DRDY, ADS129X_dataReadyISR, FALLING);
 #endif
@@ -118,41 +126,49 @@ void ADS129X::STOP() {
 #ifndef ADS129X_POLLING
         detachInterrupt(DRDY);
 #endif
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1)); 
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_STOP);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();
 }
 
 /**
  * Enable Read Data Continuous mode (default).
  */
 void ADS129X::RDATAC() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_RDATAC);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
     delayMicroseconds(2); //must way at least 4 tCLK cycles before sending another command (Datasheet, pg. 39)
+    SPI.endTransaction();    
 }
 
 /**
  * Stop Read Data Continuously mode.
  */
 void ADS129X::SDATAC() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_SDATAC); //SDATAC
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();    
 }
 
 /**
  * Read data by command; supports multiple read back.
  */
 void ADS129X::RDATA() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW);
     SPI.transfer(ADS129X_CMD_RDATA);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH);
+    SPI.endTransaction();    
 }
 
 /**
@@ -161,6 +177,7 @@ void ADS129X::RDATA() {
  * @return          value of register
  */
 byte ADS129X::RREG(byte _address) {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     byte opcode1 = ADS129X_CMD_RREG | (_address & 0x1F); //001rrrrr; _RREG = 00100000 and _address = rrrrr
     digitalWrite(CS, LOW); //Low to communicate
     SPI.transfer(opcode1); //RREG
@@ -169,6 +186,7 @@ byte ADS129X::RREG(byte _address) {
     byte data = SPI.transfer(0x00); // returned byte should match default of register map unless edited manually (Datasheet, pg.39)
     delayMicroseconds(2);
     digitalWrite(CS, HIGH); //High to end communication
+    SPI.endTransaction();    
     return data;
 }
 
@@ -179,6 +197,7 @@ byte ADS129X::RREG(byte _address) {
  * @param data          pointer to data array
  */
 void ADS129X::RREG(byte _address, byte _numRegisters, byte *_data) {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     byte opcode1 = ADS129X_CMD_RREG | (_address & 0x1F); //001rrrrr; _RREG = 00100000 and _address = rrrrr
     digitalWrite(CS, LOW); //Low to communicated
     SPI.transfer(ADS129X_CMD_SDATAC); //SDATAC
@@ -189,6 +208,7 @@ void ADS129X::RREG(byte _address, byte _numRegisters, byte *_data) {
     }
     delayMicroseconds(2);
     digitalWrite(CS, HIGH); //High to end communication
+    SPI.endTransaction();    
 }
 
 /**
@@ -197,6 +217,7 @@ void ADS129X::RREG(byte _address, byte _numRegisters, byte *_data) {
  * @param _value   register value
  */
 void ADS129X::WREG(byte _address, byte _value) {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     byte opcode1 = ADS129X_CMD_WREG | (_address & 0x1F); //001rrrrr; _RREG = 00100000 and _address = rrrrr
     digitalWrite(CS, LOW); //Low to communicate
     SPI.transfer(opcode1);
@@ -204,6 +225,7 @@ void ADS129X::WREG(byte _address, byte _value) {
     SPI.transfer(_value);
     delayMicroseconds(2);
     digitalWrite(CS, HIGH); //Low to communicate
+    SPI.endTransaction();    
 }
 
 /**
@@ -211,12 +233,14 @@ void ADS129X::WREG(byte _address, byte _value) {
  * @return device ID
  */
 byte ADS129X::getDeviceId() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(CS, LOW); //Low to communicate
     SPI.transfer(ADS129X_CMD_RREG); //RREG
     SPI.transfer(0x00); //Asking for 1 byte
     byte data = SPI.transfer(0x00); // byte to read (hopefully 0b???11110)
     delayMicroseconds(2);
     digitalWrite(CS, HIGH); //Low to communicate
+    SPI.endTransaction();    
     return data;
 }
 
@@ -226,6 +250,7 @@ byte ADS129X::getDeviceId() {
  * Transfers data and sets a flag.
  */
 void ADS129X_dataReadyISR() {
+    SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));     
     digitalWrite(ADS129X_CS, LOW);
     // status
     ((char*) ADS129X_data)[0*4+3] = 0;
@@ -273,6 +298,7 @@ void ADS129X_dataReadyISR() {
     ((char*) ADS129X_data)[8*4+1] = SPI.transfer(0x00);
     ((char*) ADS129X_data)[8*4+0] = SPI.transfer(0x00);
     digitalWrite(ADS129X_CS, HIGH);
+    SPI.endTransaction();    
     ADS129X_newData = true;
 }
 #endif
@@ -294,6 +320,7 @@ boolean ADS129X::getData(long *buffer) {
     return false;
 #else
     if (digitalRead(DRDY) == LOW) {
+        SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE1));             
         digitalWrite(CS, LOW);
         for(int i = 0; i<9; i++){
             long dataPacket = 0;
@@ -304,6 +331,7 @@ boolean ADS129X::getData(long *buffer) {
             buffer[i] = dataPacket;
         }
         digitalWrite(CS, HIGH);
+        SPI.endTransaction();        
         return true;
     }
     return false;
