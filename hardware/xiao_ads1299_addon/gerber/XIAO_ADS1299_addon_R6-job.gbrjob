@@ -5,11 +5,11 @@
       "Application": "Pcbnew",
       "Version": "7.0.11+dfsg-1build4"
     },
-    "CreationDate": "2026-11-07T20:54:51-08:00"
+    "CreationDate": "2026-11-11T10:04:47-08:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
-      "Name": "XIAO_ADS1299_addon_R4",
+      "Name": "XIAO_ADS1299_addon_R6",
       "GUID": "5849414f-5f41-4445-9331-3239395f6164",
       "Revision": "rev?"
     },
@@ -43,57 +43,57 @@
   ],
   "FilesAttributes": [
     {
-      "Path": "XIAO_ADS1299_addon_R4-F_Cu.gtl",
+      "Path": "XIAO_ADS1299_addon_R6-F_Cu.gtl",
       "FileFunction": "Copper,L1,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-In1_Cu.g2",
+      "Path": "XIAO_ADS1299_addon_R6-In1_Cu.g2",
       "FileFunction": "Copper,L2,Inr",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-In2_Cu.g3",
+      "Path": "XIAO_ADS1299_addon_R6-In2_Cu.g3",
       "FileFunction": "Copper,L3,Inr",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-B_Cu.gbl",
+      "Path": "XIAO_ADS1299_addon_R6-B_Cu.gbl",
       "FileFunction": "Copper,L4,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-F_Paste.gtp",
+      "Path": "XIAO_ADS1299_addon_R6-F_Paste.gtp",
       "FileFunction": "SolderPaste,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-B_Paste.gbp",
+      "Path": "XIAO_ADS1299_addon_R6-B_Paste.gbp",
       "FileFunction": "SolderPaste,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-F_Silkscreen.gto",
+      "Path": "XIAO_ADS1299_addon_R6-F_Silkscreen.gto",
       "FileFunction": "Legend,Top",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-B_Silkscreen.gbo",
+      "Path": "XIAO_ADS1299_addon_R6-B_Silkscreen.gbo",
       "FileFunction": "Legend,Bot",
       "FilePolarity": "Positive"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-F_Mask.gts",
+      "Path": "XIAO_ADS1299_addon_R6-F_Mask.gts",
       "FileFunction": "SolderMask,Top",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-B_Mask.gbs",
+      "Path": "XIAO_ADS1299_addon_R6-B_Mask.gbs",
       "FileFunction": "SolderMask,Bot",
       "FilePolarity": "Negative"
     },
     {
-      "Path": "XIAO_ADS1299_addon_R4-Edge_Cuts.gm1",
+      "Path": "XIAO_ADS1299_addon_R6-Edge_Cuts.gm1",
       "FileFunction": "Profile",
       "FilePolarity": "Positive"
     }

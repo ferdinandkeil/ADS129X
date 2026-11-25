@@ -1,59 +1,77 @@
-# XIAO ADS1299 add-on, Rev 4
+# XIAO ADS1299 / ADS1298: main board R5 and add-on R6 (flex-cable inputs)
 
-Changes from Rev 3:
-- grouped sensor connector, analog first;
-- no J4 link header;
-- guard on all three analog-side layers, set through a GUARD pin.
+These replace the 2×14 / 2×11 J3 header with a **22-pin, 0.5 mm FPC connector** for the guarded inputs. A small **1×4 header** carries the bias and GPIO lines. Power, ground and I²C now reach the sensor shield through the stack headers, so they're gone from J3.
 
-## Sensor connector J3 (2×11, 1.27 mm, right-angle)
-Columns run 1 → 11 from left to right, looking at the XIAO side with the USB end up.
+| Board | Size | Layers | KiCad check |
+|---|---|---|---|
+| XIAO ADS1299 8ch main R5 | 20.05 × 26.55 mm | 4 | 0 unconnected, 0 clearance / hole / edge errors |
+| XIAO ADS1299 add-on R6 | 20.25 × 26.55 mm | 4 | same; 2 short router stubs flagged as dangling (CLK, MISO; outside the guard zone, as on R5) |
+| XIAO ADS1298 8ch main R5 | 20.05 × 26.55 mm | 4 | 0 unconnected, 0 clearance / hole / edge errors |
+| XIAO ADS1298 add-on R6 | 20.25 × 26.55 mm | 4 | same as the ADS1299 add-on |
 
-| Col | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Near row | IN1P | IN1N | IN2P | IN2N | IN3P | IN3N | IN4P | IN4N | IN5P | IN5N | IN6P |
-| Far row | **GUARD** | GPIO2 | GND | BIASINV | SRB2 | SRB1 | IN8N | IN8P | IN7N | IN7P | IN6N |
+- **Stack headers:** J1 and J2 (XIAO / stack) are unchanged, checked pad by pad against main R4 / add-on R5.
+- **Remaining notices:** small-text, silkscreen and library notices, plus courtyard touches:
+  - J4 vs J3, both boards: header outline vs connector outline;
+  - main ADS1298: C6 vs J2;
+  - add-on: R5 vs J2.
 
-These are channels 9–16 of the 16-channel system.
+  The parts clear each other physically.
 
-## Guard: set from the main board
-- **No divider on this board.** R6/R7 are not fitted; their pads are kept only for standalone use.
-- **C11 (4.7 uF tantalum)** filters the guard locally. Its + pad goes to the guard.
-- **J3 col 1 (GUARD)** is the guard net. It connects solidly to the guard copper on the ADS side, inner 2 and inner 1.
-- **The sensor board must tie this GUARD pin to the main board's GUARD pin.** The add-on's guard then follows the main board's choice:
+## J3: input cable connector
+- **Part:** Hirose **FH12-22S-0.5SH(55)**: 22 positions, 0.5 mm pitch, bottom contact, slide-lock ZIF.
+- **Placement:** ADS side, cable entering from the bottom edge.
+- **Cables:** fits the Adafruit / SparkFun 22-pin 0.5 mm cables.
 
-| Main board fitted | Add-on guard |
-|---|---|
-| R8 (divider) | AVDD/2 |
-| R7 (BIASOUT) | BIASOUT through 4.7 k. C11 then makes it a filtered BIASOUT (about 7 Hz), so the bias amplifier never drives the guard capacitance directly |
+**Pinout, left to right as seen from the XIAO side** (also on the silkscreen):
 
-Left unconnected, the guard floats. That's harmless, but it gives no benefit.
+| Positions | ADS1299 | ADS1298 |
+|---|---|---|
+| 1 | GUARD | GUARD |
+| 2 | SRB1 | PACE1 |
+| 3 | SRB2 | **WCT** |
+| 4 | GUARD | GUARD |
+| 5–12 | IN1P IN1N IN2P IN2N IN3P IN3N IN4P IN4N | same |
+| 13 | GUARD | GUARD |
+| 14–21 | IN5P IN5N IN6P IN6N IN7P IN7N IN8P IN8N | same |
+| 22 | GUARD | GUARD |
 
-## Link to the main board: no J4
-| Signal | Path |
-|---|---|
-| CLK | Main chip's CLK → XIAO **D6** pass-through pin → this chip's CLK. Firmware keeps GPIO43 (D6) as an input |
-| Data | This chip's DOUT → **MISO** (D9). It is high-impedance while CS2 (D7) is high |
-| CS2 | XIAO **D7**, with a 10 k pull-up (R5) |
+- **Silkscreen:** every J3 contact is labelled on the ADS side, between the chip and J3, in two staggered rows. Each label has a leader line ending at its contact pad.
+- **Foil shield:** both outermost conductors are guard, so the copper foil can be soldered to either end lead.
+- **Mounting tabs:** J3's two mounting tabs are also guard.
 
-The two chips are read one after the other: CS (D3) and then CS2 (D7), each 3 + 3 × channels bytes per DRDY.
+## J4: aux header (1×4, 1.27 mm, ADS side, right edge)
 
-## Layer use in the analog region (below the ADS input pins)
-| Layer | Contents |
-|---|---|
-| ADS side | Electrode inputs and SRB only; every other fill is guard |
-| Inner 2 | Guard plane. Only SRB2 and BIASINV pass through (both analog, both guarded) |
-| Inner 1 | Unbroken guard plane |
-| XIAO side | Ground pour; CLK, CS2, GPIO2, SCK and supplies |
+| Pin | ADS1299 | ADS1298 |
+|---|---|---|
+| 1 | GPIO2 | GPIO2 |
+| 2 | GPIO3 | GPIO3 |
+| 3 | BIASOUT | RLDOUT |
+| 4 | BIASINV | RLDINV |
 
-CLK, CS2, SCK and GPIO2 leave the ADS upward through vias into the digital area.
+The pinout is the same on main and add-on, so the sensor shield can treat every board alike.
 
-## Other changes
-- **C6 removed.** Pins 64, 62 (BIASIN) and 45 (GPIO3) are left open. The main board handles sensor-board ID with its own GPIO2/3.
+## Guard
+- **Same closed guard region as R4/R5** on all four layers, from the chip's input pins down over all of J3 to the bottom edge.
+- **Under the chip:** on the inner layers and the ADS side, the guard reaches up under the chip body in one straight edge, just inside the supply pins. The input pins have guard on every side, and main and add-on match in this area.
+  - **Cut-outs:** one small cut-out each: a ground via on the main boards, an AVDD via on the add-ons.
+- **Inner 2:** one solid guard sheet under the whole input fan.
+- **Input fan (ADS side):** 16 traces with no vias. IN1P–IN4N run straight down to J3; IN5P–IN8N take a single 0.5 mm jog.
+- **SRB1/SRB2:** leave the chip corner under its body and run beside IN1P to J3, inside the guard pour.
+- **J3 guard pads:** each of the four has its own via into the guard planes, directly in front of the contact row.
+- **Guard source** (main board only, unchanged): R7 = BIAS/RLD out through 4.7 k, R8 = divider.
+  - R7 moved beside J4, on the XIAO side.
+- **Add-on guard:** the add-on has no guard source. Its guard comes back from the sensor shield through its own J3 cable, so the shield must tie the guard conductors of both cables together. The stack headers are unchanged.
 
-## Check
-- KiCad check: 0 unconnected pads, 0 clearance errors.
-- The remaining notices are small text, silkscreen near the edge, and the C4/C5 courtyard touch.
+## Changes
+- **Bias/RLD and GPIO2/3:** they leave the chip on short vias and run on **inner 1** down the right side to J4. That keeps them under the inner-2 guard sheet and away from the inputs.
+- **ADS1298 WCT:**
+  - from pin 64 (bottom-right corner), across under the fan on inner 1, guarded above and below, to J3 position 3;
+  - on the main board, C6 (100 pF) stays on WCT, beside the chip;
+  - **the add-on now brings WCT out too**, as requested; pin 18 (PACE2) is left open on both boards.
+- **GPIO3 and BIASOUT/RLDOUT on the add-on:** now brought out to J4 as well.
+- **Add-on R5 (CS2 pull-up):** moved beside J2's CS2 pin.
+- **Gone from the inputs connector:** SDA, SCL, PPG_INT, 3V3 and GND. The sensor shield gets these from the stack headers.
 
-## Rev note
-C5 moved 0.3 mm up so its courtyard no longer overlaps C4 (VCAP1/VCAP2 pads now 0.575 mm apart).
-Silkscreen: all labels kept, strokes raised to 0.15 mm (printable) and each label row enlarged as far as the space allows (0.40-0.60 mm).
+## Notes for the sensor shield
+- **Contact side:** J3 is bottom-contact. With an "A-B" cable whose contacts are on opposite sides at each end, the shield's connector needs to keep pin 1 on the same end. Check the cable once before laying the shield out.
+- **Guard ties:** tie all J3 guard positions from every cable together on the shield, plus the foil drain.
