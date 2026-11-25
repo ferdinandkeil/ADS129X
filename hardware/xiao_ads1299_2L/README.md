@@ -1,4 +1,12 @@
-# XIAO-ADS1299 8-channel shield, 2-layer, R2 (stackable to two boards)
+# XIAO-ADS1299 8-channel shield, 2-layer, R2.1 (stackable to two boards)
+
+**R2.1 changes from R2:** guard filter only. Copper routing is unchanged.
+- **R3** is now **100 kΩ** (was 4.7 kΩ).
+- **C10 (new):** 2.2 µF X7R 0603 from GUARD to GND, on the top side at the edge of the guard pour.
+
+Together, R3 and C10 form a low-pass filter with its corner at about 0.7 Hz. The guard keeps the body's DC level but no longer carries the bias drive's correction signal, which moves opposite to the inputs. At AC it now behaves like a quiet shield. The capacitor sits on the guard side of R3, so the ADS1299 bias amplifier never sees it directly. After power-up or an electrode reconnect, the guard takes a few seconds to settle.
+
+DRC is clean. There are no unconnected pads, and the only notes are library-footprint notes.
 
 R2 is the R1 board plus four open solder jumpers, so two boards can share one XIAO with a common clock, and a 2×7 output header that adds BIASINV and a second GUARD pin. The board is still 20.0 × 25.8 mm, 2 layers. Every square trace corner is chamfered with a small 45°; the only remaining right angles are T-junctions and trace entries into pads or vias. DRC is clean (0.15 mm clearance, 0.6/0.3 mm vias, 0.6 mm minimum silkscreen text).
 
@@ -42,7 +50,7 @@ Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked wi
 
 ## Second board in a stack
 
-- **Leave off R2, C9 and R3.** Then only board 1's feedback network is on the shared BIASINV line, and board 2's guard comes only from board 1 over pin 14.
+- **Leave off R2, C9 and R3.** C10 is optional on board 2: fitted, it just adds to the shared guard capacitance. Then only board 1's feedback network is on the shared BIASINV line, and board 2's guard comes only from board 1 over pin 14.
 - **Firmware:** power down board 2's bias amplifier (PD_BIAS = 0 in CONFIG3). Its BIAS_SENSP/N channels still sum into board 1's amplifier through the shared BIASINV, as the ADS1299 datasheet shows for multiple devices.
 - **Wiring:** link pins 13 and 14 between the boards, and make sure both boards' SRB1 lines reach the same reference electrode.
 - **Stacking headers:** J1/J2 on the lower board need long-tail stacking headers so the XIAO pins pass through.
@@ -74,7 +82,7 @@ These are unchanged from R1, apart from routing.
 - **Positive inputs:** they run on the bottom layer with one 45° jog and no vias, under guard copper on both layers.
 - **SRB2:** it runs on the top layer inside the guard pour, between the header rows, to pin 10.
 - **BIASINV:** it runs on the top layer inside the guard pour to pin 13.
-- **Guard:** it is fed from BIASOUT through R3 (4.7 kΩ) and stitched with 16 vias.
+- **Guard:** it is fed from BIASOUT through R3 (100 kΩ), filtered by C10 (2.2 µF) to ground, and stitched with 16 vias.
 - **Ground:** it is stitched with 17 vias.
 
 ## Bias
@@ -94,7 +102,7 @@ R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT. Th
 
 ## Assembly
 
-- **Top side (XIAO side):** C1–C9, R1–R3, R5. Bridge the jumpers for your setup (see the table above).
+- **Top side (XIAO side):** C1–C10, R1–R3, R5. Bridge the jumpers for your setup (see the table above).
 - **Bottom side (ADS side):** U1, D1, R4, then J3.
 - **Sockets:** J1/J2 go on last, as long-tail stacking headers on the lower board of a stack.
 - **One via sits in C8's ground pad.** It ties the top-side ground around the jumpers to the ground under the chip.
@@ -104,6 +112,6 @@ R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT. Th
 | File | Contents |
 |---|---|
 | `XIAO_ADS1299_8ch_2L_R2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
-| `XIAO_ADS1299_8ch_2L_R2_gerbers.zip` | Gerbers and drill file |
-| `XIAO_ADS1299_8ch_2L_R2_BOM.csv` | Bill of materials, with notes for the 2nd board |
+| `XIAO_ADS1299_8ch_2L_R2.1_gerbers.zip` | Gerbers and drill file |
+| `XIAO_ADS1299_8ch_2L_R2.1_BOM.csv` | Bill of materials, with notes for the 2nd board |
 | `*_copper.png`, `*_silkscreen.png`, `*_assembly.png` | Both sides |
