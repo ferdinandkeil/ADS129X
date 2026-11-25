@@ -1,13 +1,10 @@
-# XIAO-ADS1299 8-channel shield, 2-layer, R1
+# XIAO-ADS1299 8-channel shield, 2-layer, R2 (stackable to two boards)
 
-A single-board ADS1299 shield for a XIAO ESP32-S3. The XIAO plugs into J1/J2 on the top side. The ADS1299, the input traces and the 2×6 right-angle output header are on the bottom side.
+R2 is the R1 board plus four open solder jumpers, so two boards can share one XIAO with a common clock, and a 2×7 output header that adds BIASINV and a second GUARD pin. The board is still 20.0 × 25.8 mm, 2 layers. Every square trace corner is chamfered with a small 45°; the only remaining right angles are T-junctions and trace entries into pads or vias. DRC is clean (0.15 mm clearance, 0.6/0.3 mm vias, 0.6 mm minimum silkscreen text).
 
-- **Board:** 20.0 × 25.8 mm (0.787 × 1.016 in = 0.80 sq in), 2 layers, 1.6 mm. XIAO pin labels are 0.6 mm text, rotated, in the strips beside the sockets.
-- **Fab rules used:** 0.15 mm clearance, 0.15–0.3 mm tracks, 0.6/0.3 mm vias. DRC is clean.
+## Output header J3 (2×7, 2.54 mm, right angle)
 
-## Output header J3 (2×6, 2.54 mm, right angle, body overhanging the bottom edge)
-
-Pin n carries signal n. Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked with a dot on the ADS side.
+Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked with a dot on the ADS side.
 
 | Column | Inner row | Outer row |
 |---|---|---|
@@ -15,78 +12,98 @@ Pin n carries signal n. Odd pins are on the inner row and even pins on the outer
 | 2 | 3 IN3P | 4 IN4P |
 | 3 | 5 IN5P | 6 IN6P |
 | 4 | 7 IN7P | 8 IN8P |
-| 5 | 9 SRB1 | 10 BIASOUT |
-| 6 | 11 GUARD | 12 SRB2 |
+| 5 | 9 SRB1 | 10 SRB2 |
+| 6 | 11 BIASOUT | 12 GUARD |
+| 7 | 13 BIASINV | 14 GUARD |
 
-The header carries no power, ground or GPIO.
+- **Pins 9–12 changed from R1.** SRB2 moved to pin 10, BIASOUT to pin 11 and GUARD to pin 12. Pins 13 (BIASINV) and 14 (GUARD) are the new outer column.
+- **Splitting the header:** a 2×6 right-angle header on pins 1–12 plus a 1×2 right-angle on pins 13/14 fits the same holes. The 1×2 is the board-to-board link: BIASINV and GUARD.
+- **Silkscreen names (ADS side):** IN1–IN8; SR1/SR2 = SRB1/SRB2; BIA = BIASOUT; BI- = BIASINV; GRD = GUARD.
 
-## Inputs, reference, guard
+## Solder jumpers (top side, all ship open)
 
-- **Negative inputs:** all eight negative inputs (IN1N–IN8N) are tied to SRB1 on the board, by a bus under the chip body. Every channel therefore reads INxP − SRB1, whatever the SRB1 bit in MISC1 is set to.
-- **Input traces:** the positive inputs run on the bottom layer, straight from the pin row to the header with one 45° jog and no vias. Even channels pass between the inner-row pads to reach the outer row.
-- **SRB2:** it crosses under the input fan on the top layer, inside the guard pour, to pin 12. This is the only signal that crosses the inputs, and only through the board's thickness, which couples about 1 fF per crossing.
-- **Guard pour:** both layers carry it from under the chip's input pins all the way to the board edge past the header, including a continuous strip below the outer row. It is stitched between layers with 27 vias.
-- **Guard drive:** the guard is fed from BIASOUT through R3 (4.7 kΩ). There is no capacitor on the guard.
-- **Ground:** both layers carry it everywhere else, stitched with 25 vias plus routed vias.
+| Jumper | Silkscreen | Bridge | Effect |
+|---|---|---|---|
+| JP1 (3-pad) | 2 / CS / 1 | centre to 1 | chip select on D1 (board 1, or a single board) |
+| | | centre to 2 | chip select on D3 (board 2) |
+| JP4 | DRDY | bridge | DRDY to D10. Board 1 or a single board only; leave open on board 2 |
+| JP2 | CLK | bridge | ADS1299 CLK pin to D4, the shared clock line. Bridge on both boards of a stack; leave open on a single board |
+| JP3 | EXT | bridge | CLKSEL to ground: external clock. Board 2 only. R5 (10 kΩ) holds CLKSEL high otherwise |
 
-## Bias
+| Setup | JP1 | JP4 | JP2 | JP3 |
+|---|---|---|---|---|
+| Single board | to 1 (D1) | bridged | open | open |
+| Stack, board 1 (clock master) | to 1 (D1) | bridged | bridged | open |
+| Stack, board 2 | to 2 (D3) | open | bridged | bridged |
 
-- **Feedback:** R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT, on the top side next to the chip.
-- **BIASOUT:** it goes straight to header pin 10. There is no current limiter on this board; the JFET limiter belongs on the sensor/electrode side as planned.
+- **Board 1 firmware:** set CLK_EN in CONFIG1 so board 1 drives its 2.048 MHz clock onto D4.
+- **Starting both boards together:** pull both CS lines low and send START (or SYNC). The two boards then convert in lockstep, and board 1's DRDY times both. Read board 1, then board 2, on the shared SPI bus.
+- **Don't drive D4 from the XIAO:** leave it as an input.
+
+## Second board in a stack
+
+- **Leave off R2, C9 and R3.** Then only board 1's feedback network is on the shared BIASINV line, and board 2's guard comes only from board 1 over pin 14.
+- **Firmware:** power down board 2's bias amplifier (PD_BIAS = 0 in CONFIG3). Its BIAS_SENSP/N channels still sum into board 1's amplifier through the shared BIASINV, as the ADS1299 datasheet shows for multiple devices.
+- **Wiring:** link pins 13 and 14 between the boards, and make sure both boards' SRB1 lines reach the same reference electrode.
+- **Stacking headers:** J1/J2 on the lower board need long-tail stacking headers so the XIAO pins pass through.
 
 ## XIAO pin use (ESP32-S3)
-
-SPI is on pins that give crossing-free routing. The ESP32's SPI pins can be assigned to any GPIO in firmware.
 
 | XIAO pin | ESP32-S3 GPIO | Signal |
 |---|---|---|
 | D0 | GPIO1 | MOSI (ADS DIN) |
-| D1 | GPIO2 | CS (10 kΩ pull-up, R1) |
+| D1 | GPIO2 | CS, board 1 (JP1 to 1) |
 | D2 | GPIO3 | SCK |
+| D3 | GPIO4 | CS, board 2 (JP1 to 2) |
+| D4 | GPIO5 | shared ADS clock (JP2) |
 | D9 | GPIO8 | MISO (ADS DOUT) |
-| D10 | GPIO9 | DRDY |
+| D10 | GPIO9 | DRDY (JP4) |
 | 5V | n/a | AVDD (ADS analog 5 V) |
 | 3V3 | n/a | DVDD |
 | GND | n/a | GND |
 
-Arduino setup: `SPI.begin(D2 /*SCK*/, D9 /*MISO*/, D0 /*MOSI*/, D1 /*CS*/)`, mode 1.
+- **CS pull-up:** R1 (10 kΩ) sits on the ADS side of JP1, so an unbridged chip stays deselected.
+- **Arduino setup:** `SPI.begin(D2 /*SCK*/, D9 /*MISO*/, D0 /*MOSI*/)`, mode 1, with CS on D1 and D3 handled in code.
+- **Power note:** AVDD comes from the XIAO's 5V pin. That pin is live only on USB, or when 5 V is fed into it.
 
-**Power note:** AVDD comes from the XIAO's 5V pin. That pin is live only on USB, or when 5 V is fed into it; it is not powered from a battery on the XIAO's battery pads.
+## Inputs, reference, guard
+
+These are unchanged from R1, apart from routing.
+
+- **Negative inputs:** all eight are tied to SRB1 on the board.
+- **Positive inputs:** they run on the bottom layer with one 45° jog and no vias, under guard copper on both layers.
+- **SRB2:** it runs on the top layer inside the guard pour, between the header rows, to pin 10.
+- **BIASINV:** it runs on the top layer inside the guard pour to pin 13.
+- **Guard:** it is fed from BIASOUT through R3 (4.7 kΩ) and stitched with 16 vias.
+- **Ground:** it is stitched with 17 vias.
+
+## Bias
+
+R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT. The corner is about 106 Hz.
 
 ## ADS1299 fixed pins
 
 | Pin | Connection |
 |---|---|
-| CLKSEL | high (internal oscillator); CLK pin left open |
+| CLKSEL | R5 (10 kΩ) to DVDD; JP3 to ground for an external clock |
+| CLK | JP2 to D4 |
 | START | low (use the START command) |
-| RESET, PWDN | high (use the RESET command) |
+| RESET, PWDN | high |
 | DAISY_IN, RESV1 | ground |
-| GPIO1 | LED D1 through R4 (3.3 kΩ); set GPIO1 as an output, high = on |
-| GPIO2–4 | open; set them as outputs in firmware so they don't float |
-| BIASREF, BIASIN, NC pins | open |
-
-**ADS1299-6:** it fits the same footprint. Header pins 7 and 8 are then unused. The datasheet asks for unused inputs to go to AVDD; on this board IN7N/IN8N are tied to SRB1 instead, and IN7P/IN8P are open at the header.
-
-## Silkscreen
-
-- **Top (XIAO side):** XIAO outline with the USB end, pin functions beside each socket (MOSI, CS, SCK, 5V, GND, 3V3, DRDY, MISO; unused pins by D number) and part references.
-- **Bottom (ADS side):** XIAO D numbers beside each socket, ADS1299 and U1, D1, and header pin names (IN1–IN8, SR1/SR2 = SRB1/SRB2, BIA = BIASOUT, GRD = GUARD) with a pin-1 dot.
-- **Silkscreen text:** 0.8 mm where it fits, 0.6 mm (0.12 mm stroke) for the pin labels and the tightest part references. Every part and XIAO pin is labeled.
+| GPIO1 | LED D1 through R4 (3.3 kΩ) |
 
 ## Assembly
 
-- **Top side (XIAO side):** C1–C9, R1–R3. All passives are 0603 except C1/C3 (0805) and C4 (1206), which suits hot-plate reflow.
+- **Top side (XIAO side):** C1–C9, R1–R3, R5. Bridge the jumpers for your setup (see the table above).
 - **Bottom side (ADS side):** U1, D1, R4, then J3.
-- **Sockets:** the XIAO sockets J1/J2 go on last.
+- **Sockets:** J1/J2 go on last, as long-tail stacking headers on the lower board of a stack.
+- **One via sits in C8's ground pad.** It ties the top-side ground around the jumpers to the ground under the chip.
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `XIAO_ADS1299_8ch_2L_R1.kicad_pcb` | KiCad 7 board |
-| `XIAO_ADS1299_8ch_2L_R1_gerbers.zip` | Gerbers and drill file |
-| `XIAO_ADS1299_8ch_2L_R1_BOM.csv` | Bill of materials |
-| `*_copper.png` | Copper and silkscreen views |
-| `*_copper.png` | Guard copper only |
-| `*_assembly.png` | Assembly drawing |
-| `*_silkscreen.png` | Silkscreen, both sides |
+| `XIAO_ADS1299_8ch_2L_R2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
+| `XIAO_ADS1299_8ch_2L_R2_gerbers.zip` | Gerbers and drill file |
+| `XIAO_ADS1299_8ch_2L_R2_BOM.csv` | Bill of materials, with notes for the 2nd board |
+| `*_copper.png`, `*_silkscreen.png`, `*_assembly.png` | Both sides |
