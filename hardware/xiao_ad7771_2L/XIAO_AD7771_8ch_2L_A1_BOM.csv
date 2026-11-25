@@ -1,0 +1,21 @@
+Refs,Qty,Value / part,Footprint,Side,Note
+C1,1,10u,C_0805_2012Metric,Bottom (chip side),
+C2 C8 C12,3,100n,C_0402_1005Metric,Bottom (chip side),
+C3 C7 C10,3,1u,C_0402_1005Metric,Bottom (chip side),
+C4 C5 C6 C9 C11,5,100n,C_0402_1005Metric,Top (XIAO side),"Top side, behind U1"
+C13,1,270p C0G,C_0402_1005Metric,Bottom (chip side),C0G/NP0. Omit on the 2nd board of a stack
+C14,1,100n DNP,C_0402_1005Metric,Bottom (chip side),DNP. Fit only with Y1
+FB1,1,600R@100M,L_0603_1608Metric,Bottom (chip side),e.g. Murata BLM18KG601SN1D
+J1,1,XIAO D0-D6,PinHeader_1x07_P2.54mm_Vertical,Top (XIAO side),XIAO socket or pins
+J2,1,XIAO 5V..D7,PinHeader_1x07_P2.54mm_Vertical,Top (XIAO side),XIAO socket or pins
+J3,1,Out 2x7 RA,PinHeader_2x07_P2.54mm_Horizontal,Bottom (chip side),2x7 right-angle header (or 2x6 + 1x2)
+LED1,1,LED,LED_0603_1608Metric,Bottom (chip side),Status LED on AD7771 GPIO0
+R1,1,1M,R_0402_1005Metric,Bottom (chip side),Omit on the 2nd board of a stack
+R2,1,100k,R_0402_1005Metric,Bottom (chip side),Bias output current limit. Omit on the 2nd board of a stack
+R3,1,4.7k,R_0402_1005Metric,Bottom (chip side),
+R4 R5 R6,3,10k,R_0402_1005Metric,Bottom (chip side),
+R7,1,47,R_0402_1005Metric,Bottom (chip side),
+R8,1,1k,R_0402_1005Metric,Bottom (chip side),
+U1,1,AD7771BCPZ,QFN-64-1EP_9x9mm_P0.5mm_EP7.5x7.5mm,Bottom (chip side),"AD7771BCPZ (LFCSP-64 9x9). Analog Devices, US distributors: Digi-Key, Mouser"
+U2,1,OPA2333AIDGKR,MSOP-8_3x3mm_P0.65mm,Bottom (chip side),"OPA2333AIDGKR (dual, zero-drift). A = bias integrator, B = guard buffer"
+Y1,1,8MHz DNP,Oscillator_SMD_Abracon_ASE-4Pin_3.2x2.5mm,Bottom (chip side),"DNP. Optional 3.3 V CMOS oscillator (e.g. 8.192 MHz, 3.2x2.5 mm); enable with JP3"
