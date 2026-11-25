@@ -224,6 +224,10 @@ The same four Teensy sketches also compiled for Teensy 3.2 / 3.1 (`teensy:avr:te
 
 Nothing in this tree was run on the carrier. Confirm the ID line (`0x3D` for an ADS1299-6), that status bits `[23:20]` are `1100`, and that the test-signal sketch steps by about ±3495 counts before trusting electrode data.
 
+## Hardware
+
+Board designs live in [`hardware/`](hardware). [`hardware/README.md`](hardware/README.md) indexes them: the ESP32-DevKitC carrier, and the XIAO boards for the ADS1299, ADS1298 and AD7771, with their XIAO pin maps and open items.
+
 ## License
 
 MIT. See [LICENSE.md](LICENSE.md). Original ADS1299 code by Conor Russomanno; the earlier Arduino port by Ferdinand Keil.
