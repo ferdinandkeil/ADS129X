@@ -24,6 +24,7 @@ This is the same pin map as the 4-layer main R5.2 / add-on R6.2 boards, so one f
 - **LED:** D1 is driven by **GPIO4** (pin 46) and is **active-low**: its anode is on DVDD, so writing GPIO4 low turns it on. GPIO1's pin sits between SCK and MISO with no room for a via.
 - **Power:** AVDD comes from the 5 V pin on the bottom layer through the empty corner beside the chip, then down the inside of J2. DVDD comes straight from the 3V3 pin into pin 50, as before.
 - **SRB2** no longer crosses the input area. On the top side it runs from its via beside pin 18 straight across at the via's level, then in one 45° diagonal down to J3 between pins 9 and 11, and into pin 10. The top-side guard under the input header pins is one solid pour.
+- **Ground fill:** every ground pocket cut off by the SPI, CS and power traces (around 3V3/MOSI/MISO/SCK/CS2 on top, D7–D9 on the bottom, between DRDY and MOSI at the top) is kept and stitched to ground on the other layer with its own via, 7 in all. Only slivers under 2 mm² stay empty, where no via fits.
 - **Decoupling, under-chip fan-out and inputs:** unchanged from R2.2, apart from C4 moving 0.4 mm left and C9 0.05 mm up.
 
 The design-rule report has no clearance errors and nothing unconnected, `tools/check_via_in_pad.py` finds no via in any part pad, and every trace is straight or at 45°. The only notes are library-footprint notes and the solder-jumper outlines trimmed at their own pads.
