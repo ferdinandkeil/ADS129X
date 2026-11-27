@@ -1,11 +1,11 @@
-# XIAO-ADS1299 8-channel shield, 2-layer, R2.1 (stackable to two boards)
+# XIAO-ADS1299 8-channel shield, 2-layer, R2.2 (stackable to two boards)
 
-## Known issue: via in C8's ground pad
+**R2.2 changes from R2.1:** no via sits in any pad.
+- **C8** is now a **1 µF X5R 0402** (was 0603), moved to (2.6, −3.65) on the top side. Its DVDD pad joins the existing DVDD trace with a short stub.
+- **The GND via that was in C8's ground pad** moved to (3.1, −2.9), clear of the pad. It still ties C8's ground, U1 pin 53 and the ground copper under the chip together. A short trace links it to C8.
+- **CLKSEL (top)** moved down to y = −2.33 to make room for the via. It still has 0.15 mm or more clearance to C6.
 
-C8 (1 µF, top side) has a GND via drilled inside its ground pad at (3.2, −3.2). This via can't simply move: it also carries the ground for U1 pin 53 and joins the ground copper under the chip. Every nearby spot is blocked by C8's DVDD pad, the CLKSEL trace or R5, so fixing it needs a local reroute of CLKSEL. That's planned for the next R2 revision.
-
-- **Assembly:** before placing C8, tin its ground pad so the hole fills with solder, then solder C8 normally.
-- **No other via in R2.1 has its drill hole inside a pad.** The vias beside R3 and C10 touch the pad edge only.
+`hardware/tools/check_via_in_pad.py` reports no via in any part pad. DRC is identical to R2.1, with library-footprint notes only. The rest of the routing is unchanged.
 
 **R2.1 changes from R2:** guard filter only. Copper routing is unchanged.
 - **R3** is now **100 kΩ** (was 4.7 kΩ).
@@ -112,13 +112,12 @@ R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT. Th
 - **Top side (XIAO side):** C1–C10, R1–R3, R5. Bridge the jumpers for your setup (see the table above).
 - **Bottom side (ADS side):** U1, D1, R4, then J3.
 - **Sockets:** J1/J2 go on last, as long-tail stacking headers on the lower board of a stack.
-- **One via sits in C8's ground pad.** It ties the top-side ground around the jumpers to the ground under the chip.
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `XIAO_ADS1299_8ch_2L_R2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
-| `XIAO_ADS1299_8ch_2L_R2.1_gerbers.zip` | Gerbers and drill file |
-| `XIAO_ADS1299_8ch_2L_R2.1_BOM.csv` | Bill of materials, with notes for the 2nd board |
-| `*_copper.png`, `*_silkscreen.png`, `*_assembly.png` | Both sides |
+| `XIAO_ADS1299_8ch_2L_R2.2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
+| `XIAO_ADS1299_8ch_2L_R2.2` gerber/ | Gerbers and drill file |
+| `XIAO_ADS1299_8ch_2L_R2.2_BOM.csv` | Bill of materials, with notes for the 2nd board |
+| `plots/*_top_bottom.png`, `*_layers.png`, `*_via_check.png` | Both sides, copper by net, via check |
