@@ -1,0 +1,17 @@
+Refs,Qty,Value / part,Footprint,Side
+C1 C2,2,10u,C_0805_2012Metric,Top
+C3 C5 C7 C8 C9,5,1u,C_0603_1608Metric,Top
+C4,1,100u,C_1206_3216Metric,Top
+C11,1,4.7u 10V tant,CP_EIA-2012-12_Kemet-R,Top
+D1,1,LED,LED_0603_1608Metric,Bottom
+FB1,1,600R@100MHz,L_0805_2012Metric,Top
+J1,1,XIAO left (D0-D6),PinHeader_1x07_P2.54mm_Vertical,Top
+J2,1,XIAO right (5V..D7),PinHeader_1x07_P2.54mm_Vertical,Top
+J3,1,FH12-18S-0.5SH(55),Hirose_FH12-18S-0.5SH_1x18-1MP_P0.50mm_Horizontal,Bottom
+J4,1,2x3 1.27mm,PinHeader_2x03_P1.27mm_Vertical,Bottom
+R1,1,10k,R_0603_1608Metric,Top
+R4,1,3.3k,R_0603_1608Metric,Bottom
+R5 R6,2,200k,R_0402_1005Metric,Top
+R7,1,4.7k (BIAS) - fit R7 OR R8,R_0402_1005Metric,Top
+R8,1,0R (DIV) - fit R7 OR R8,R_0402_1005Metric,Top
+U1,1,ADS1299IPAG (or -6 / -4),TQFP-64_10x10mm_P0.5mm,Bottom

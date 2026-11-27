@@ -1,98 +1,56 @@
-# XIAO ADS1299 / ADS1298: main board R5 and add-on R6 (flex-cable inputs)
+# XIAO ADS1299 main board, 8 channels, R5.2 (18-pin flex inputs)
 
-## Revision R5.1: vias moved off component pads
+**R5.2** is the 18-pin flex board with every via moved off component pads. Earlier revisions: R5 (22-pin), R5.1 (22-pin, not for order), R5 (18-pin). Board-to-board pinouts, parts and placement are unchanged.
 
-R5.1 changes only vias that sat on or touched component pads in R5. Solder can wick down such a via and starve the joint, and on 0.5 mm-pitch pins the via ring can bridge to the next pin.
+## R5.2 changes: vias off pads
+A via on or touching a small pad can wick solder away from the joint. On 0.5 mm-pitch pins its ring can also bridge to the next pin.
 
-No circuit, part or placement changes, and the Gerbers are regenerated. The design-rule report is identical to the previous revision's: no new errors and nothing unconnected. `plots/*_via_check.png` shows pads and vias as outlines, before and after.
+- **New positions:** each via now sits beside its pad, joined by a short straight or 45° trace.
+- **Re-joined traces:** traces that met the via are re-routed from their previous corner, straight and at 45°.
+- **Checks:** the design-rule report matches the original board's line for line, nothing is unconnected, and `tools/check_via_in_pad.py` finds no via in any part pad.
+- **"Drill clear" rows** in the table: the hole is off the pad and the ring still touches the pad edge. Vias are tented, so no solder reaches the hole.
+- **U1 pin 25:** the only spot was 1.5 mm out past the pin tip, between the pin row and J1 pin 4. Its stub can't be straight or 45° there with 0.15 mm clearance, so it's one short angled run on the bottom.
 
-- **"Clear":** the via now sits fully off the pad, joined by a short trace.
-- **"Drill clear":** the drill hole is fully off the pad, and the via ring still overlaps the pad slightly where there was no room for more. Vias are tented, so no solder reaches the hole.
-- **Not changed:** vias in J3's large mounting tabs are kept on purpose.
+| Pad | Net | Via moved | Distance | Result |
+|---|---|---|---|---|
+| U1.33 | GND | (-4.20, -5.66) → (-4.25, -5.66) | 0.05 mm | clear |
+| U1.32 | GND | (-5.50, -3.80) → (-5.82, -4.25) | 0.55 mm | clear |
+| D1.1 | GND | (1.25, -8.55) → (1.31, -7.85) | 0.70 mm | clear |
+| C4.2 | GND | (-1.70, -1.40) → (-1.65, -1.10) | 0.30 mm | clear |
+| C7.2 | GND | (2.85, 1.60) → (3.35, 1.60) | 0.50 mm | drill clear |
+| C8.2 | GND | (2.70, -2.40) → (2.74, -1.90) | 0.50 mm | clear |
+| U1.25 | GND | (-5.66, -0.25) → (-6.89, -1.11) | 1.50 mm | clear |
+| C3.2 | GND | (-2.90, 0.40) → (-2.13, 0.04) | 0.85 mm | clear |
+| C4.2 | GND | (-2.50, -2.00) → (-2.56, -2.35) | 0.35 mm | clear |
+| R6.2 | GND | (0.46, 0.00) → (0.45, -0.10) | 0.10 mm | drill clear |
+| C11.2 | GND | (1.30, -1.40) → (1.85, -0.22) | 1.30 mm | clear |
+| R7.1 | GUARD | (4.50, 10.00) → (4.49, 9.90) | 0.10 mm | clear |
 
-| Pad | Net | Change |
+`plots/*_via_check.png` shows pads and vias, before and after.
+
+## XIAO nRF54L15
+
+The XIAO pins match every XIAO, including the nRF54L15, and SPI sits on that board's high-speed SPI:
+
+| XIAO pin | nRF54L15 | Use here |
 |---|---|---|
-| **U1 pin 25** | GND | Was centred on the pin. Now clear, 1.5 mm out past the pin tip with a dog-leg trace (keeps its original 0.40/0.20 mm size). |
-| **U1 pin 32** | GND | Clear, past the pin tip. |
-| U1 pin 33 | GND | Ring touched the pin. Now clear. |
-| **D1 (LED) pin 1** | GND | Clear. |
-| C3, C4 (two vias), C8, C11 | GND | Clear. |
-| C7 | GND | Drill clear. The via sits between C7's pads. |
-| R6 | GND | Drill clear, moved 0.25 mm. |
-| J3 pin 22 | GUARD | Ring touched the pad. Now clear. |
+| D8 / D9 / D10 | P2.01 / P2.04 / P2.02 | SCK / MISO / MOSI on **SPIM00** (Zephyr `xiao_spi` = `&spi00`) |
+| D0 | P1.04 | DRDY (main). P1 supports pin interrupts; P2 GPIOs don't |
+| D3 | P1.07 | CS (main) |
+| D7 | P2.07 | CS2 (add-on) |
+| D4 / D5 | P1.10 / P1.11 | I²C (`i2c22`), main board only |
+| D6 | P2.08 | ADS clock pass-through between stacked boards |
 
-These replace the 2×14 / 2×11 J3 header with a **22-pin, 0.5 mm FPC connector** for the guarded inputs. A small **1×4 header** carries the bias and GPIO lines. Power, ground and I²C now reach the sensor shield through the stack headers, so they're gone from J3.
+- **Disable `uart21` in firmware:** `&uart21 { status = "disabled"; };`. Zephyr turns it on by default on D6/D7, and its TX would drive the clock line on D6.
+- **USB power only:** AVDD comes from the XIAO 5 V pin through FB1, and that pin carries no usable 5 V when the XIAO runs on battery alone.
 
-| Board | Size | Layers | KiCad check |
-|---|---|---|---|
-| XIAO ADS1299 8ch main R5 | 20.05 × 26.55 mm | 4 | 0 unconnected, 0 clearance / hole / edge errors |
-| XIAO ADS1299 add-on R6 | 20.25 × 26.55 mm | 4 | same; 2 short router stubs flagged as dangling (CLK, MISO; outside the guard zone, as on R5) |
-| XIAO ADS1298 8ch main R5 | 20.05 × 26.55 mm | 4 | 0 unconnected, 0 clearance / hole / edge errors |
-| XIAO ADS1298 add-on R6 | 20.25 × 26.55 mm | 4 | same as the ADS1299 add-on |
+## Inputs, aux header and guard
+See [`../FLEX18.md`](../FLEX18.md): 18-pin Hirose FH12 flex input, 2×3 1.27 mm aux header, and closed guard on all four layers.
 
-- **Stack headers:** J1 and J2 (XIAO / stack) are unchanged, checked pad by pad against main R4 / add-on R5.
-- **Remaining notices:** small-text, silkscreen and library notices, plus courtyard touches:
-  - J4 vs J3, both boards: header outline vs connector outline;
-  - main ADS1298: C6 vs J2;
-  - add-on: R5 vs J2.
-
-  The parts clear each other physically.
-
-## J3: input cable connector
-- **Part:** Hirose **FH12-22S-0.5SH(55)**: 22 positions, 0.5 mm pitch, bottom contact, slide-lock ZIF.
-- **Placement:** ADS side, cable entering from the bottom edge.
-- **Cables:** fits the Adafruit / SparkFun 22-pin 0.5 mm cables.
-
-**Pinout, left to right as seen from the XIAO side** (also on the silkscreen):
-
-| Positions | ADS1299 | ADS1298 |
-|---|---|---|
-| 1 | GUARD | GUARD |
-| 2 | SRB1 | PACE1 |
-| 3 | SRB2 | **WCT** |
-| 4 | GUARD | GUARD |
-| 5–12 | IN1P IN1N IN2P IN2N IN3P IN3N IN4P IN4N | same |
-| 13 | GUARD | GUARD |
-| 14–21 | IN5P IN5N IN6P IN6N IN7P IN7N IN8P IN8N | same |
-| 22 | GUARD | GUARD |
-
-- **Silkscreen:** every J3 contact is labelled on the ADS side, between the chip and J3, in two staggered rows. Each label has a leader line ending at its contact pad.
-- **Foil shield:** both outermost conductors are guard, so the copper foil can be soldered to either end lead.
-- **Mounting tabs:** J3's two mounting tabs are also guard.
-
-## J4: aux header (1×4, 1.27 mm, ADS side, right edge)
-
-| Pin | ADS1299 | ADS1298 |
-|---|---|---|
-| 1 | GPIO2 | GPIO2 |
-| 2 | GPIO3 | GPIO3 |
-| 3 | BIASOUT | RLDOUT |
-| 4 | BIASINV | RLDINV |
-
-The pinout is the same on main and add-on, so the sensor shield can treat every board alike.
-
-## Guard
-- **Same closed guard region as R4/R5** on all four layers, from the chip's input pins down over all of J3 to the bottom edge.
-- **Under the chip:** on the inner layers and the ADS side, the guard reaches up under the chip body in one straight edge, just inside the supply pins. The input pins have guard on every side, and main and add-on match in this area.
-  - **Cut-outs:** one small cut-out each: a ground via on the main boards, an AVDD via on the add-ons.
-- **Inner 2:** one solid guard sheet under the whole input fan.
-- **Input fan (ADS side):** 16 traces with no vias. IN1P–IN4N run straight down to J3; IN5P–IN8N take a single 0.5 mm jog.
-- **SRB1/SRB2:** leave the chip corner under its body and run beside IN1P to J3, inside the guard pour.
-- **J3 guard pads:** each of the four has its own via into the guard planes, directly in front of the contact row.
-- **Guard source** (main board only, unchanged): R7 = BIAS/RLD out through 4.7 k, R8 = divider.
-  - R7 moved beside J4, on the XIAO side.
-- **Add-on guard:** the add-on has no guard source. Its guard comes back from the sensor shield through its own J3 cable, so the shield must tie the guard conductors of both cables together. The stack headers are unchanged.
-
-## Changes
-- **Bias/RLD and GPIO2/3:** they leave the chip on short vias and run on **inner 1** down the right side to J4. That keeps them under the inner-2 guard sheet and away from the inputs.
-- **ADS1298 WCT:**
-  - from pin 64 (bottom-right corner), across under the fan on inner 1, guarded above and below, to J3 position 3;
-  - on the main board, C6 (100 pF) stays on WCT, beside the chip;
-  - **the add-on now brings WCT out too**, as requested; pin 18 (PACE2) is left open on both boards.
-- **GPIO3 and BIASOUT/RLDOUT on the add-on:** now brought out to J4 as well.
-- **Add-on R5 (CS2 pull-up):** moved beside J2's CS2 pin.
-- **Gone from the inputs connector:** SDA, SCL, PPG_INT, 3V3 and GND. The sensor shield gets these from the stack headers.
-
-## Notes for the sensor shield
-- **Contact side:** J3 is bottom-contact. With an "A-B" cable whose contacts are on opposite sides at each end, the shield's connector needs to keep pin 1 on the same end. Check the cable once before laying the shield out.
-- **Guard ties:** tie all J3 guard positions from every cable together on the shield, plus the foil drain.
+## Files
+| File | Contents |
+|---|---|
+| `XIAO_ADS1299_8ch_R5.2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
+| `gerber/` | Gerbers and drill file (4 layers) |
+| `XIAO_ADS1299_8ch_R5.2_BOM.csv` | Bill of materials |
+| `plots/` | Top/bottom view, copper by net, via check |
