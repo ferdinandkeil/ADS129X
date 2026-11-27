@@ -1,11 +1,35 @@
-# XIAO-ADS1299 8-channel shield, 2-layer, R2.2 (stackable to two boards)
+# XIAO-ADS1299 8-channel shield, 2-layer, R2.3 (stackable to two boards)
 
-**R2.2 changes from R2.1:** no via sits in any pad.
-- **C8** is now a **1 µF X5R 0402** (was 0603), moved to (2.6, −3.65) on the top side. Its DVDD pad joins the existing DVDD trace with a short stub.
-- **The GND via that was in C8's ground pad** moved to (3.1, −2.9), clear of the pad. It still ties C8's ground, U1 pin 53 and the ground copper under the chip together. A short trace links it to C8.
-- **CLKSEL (top)** moved down to y = −2.33 to make room for the via. It still has 0.15 mm or more clearance to C6.
+**R2.3** re-lays the top half so SPI uses the XIAO's standard SPI pins (D8–D10). On the XIAO nRF54L15 these are the fixed pins of SPIM00, its high-speed SPI; ESP32 boards can remap SPI, but the nRF54L15 can't. D4/D5 (I²C) and D2 stay free and pass straight through the stacking headers to a sensor board.
 
-`hardware/tools/check_via_in_pad.py` reports no via in any part pad. DRC is identical to R2.1, with library-footprint notes only. The rest of the routing is unchanged.
+| XIAO pin | nRF54L15 | R2.3 | R2.2 |
+|---|---|---|---|
+| D0 | P1.04 | DRDY (JP4) | MOSI |
+| D1 | P1.05 | shared ADS clock (JP2) | CS, board 1 |
+| D2 | P1.06 | free (PPG_INT on a sensor board) | SCK |
+| D3 | P1.07 | CS, board 1 (JP1) | CS, board 2 |
+| D4 / D5 | P1.10 / P1.11 | free: I²C pass-through | shared clock / free |
+| D6 | P2.08 | free | free |
+| D7 | P2.07 | CS, board 2 (JP5) | free |
+| D8 | P2.01 | SCK | free |
+| D9 | P2.04 | MISO | MISO |
+| D10 | P2.02 | MOSI | DRDY |
+
+This is the same pin map as the 4-layer main R5.2 / add-on R6.2 boards, so one firmware build serves both.
+
+**Other R2.3 changes:**
+- **CS jumpers:** the 3-pad JP1 is now two 2-pad jumpers in the top corners: JP1 (marked 1) sends CS to D3 and JP5 (marked 2) sends it to D7. CS runs along the top edge to both.
+- **Jumper positions:** JP2 (CLK) and JP4 (DRDY) sit next to D1/D0.
+- **R1 (CS pull-up)** is on the bottom side, top-left; R4 (LED resistor) is on the top side.
+- **LED:** D1 is driven by **GPIO4** (pin 46) and is **active-low**: its anode is on DVDD, so writing GPIO4 low turns it on. GPIO1's pin sits between SCK and MISO with no room for a via.
+- **Power:** AVDD comes from the 5 V pin on the bottom layer through the empty corner beside the chip, then down the inside of J2. DVDD comes straight from the 3V3 pin into pin 50, as before.
+- **Decoupling, under-chip fan-out, inputs and guard:** unchanged from R2.2, apart from C4 moving 0.4 mm left and C9 0.05 mm up.
+
+The design-rule report has no clearance errors and nothing unconnected, `tools/check_via_in_pad.py` finds no via in any part pad, and every trace is straight or at 45°. The only notes are library-footprint notes and the solder-jumper outlines trimmed at their own pads.
+
+**XIAO nRF54L15 firmware:** use `&spi00` (Zephyr's `xiao_spi`) on D8–D10, DRDY on D0 as an interrupt (P1 supports it; P2 GPIOs don't), and disable `uart21` when a second board uses D7 as CS: `&uart21 { status = "disabled"; };`.
+
+**R2.2 changes from R2.1:** C8 became 0402 and its ground via moved out of its pad.
 
 **R2.1 changes from R2:** guard filter only. Copper routing is unchanged.
 - **R3** is now **100 kΩ** (was 4.7 kΩ).
@@ -39,21 +63,21 @@ Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked wi
 
 | Jumper | Silkscreen | Bridge | Effect |
 |---|---|---|---|
-| JP1 (3-pad) | 2 / CS / 1 | centre to 1 | chip select on D1 (board 1, or a single board) |
-| | | centre to 2 | chip select on D3 (board 2) |
-| JP4 | DRDY | bridge | DRDY to D10. Board 1 or a single board only; leave open on board 2 |
-| JP2 | CLK | bridge | ADS1299 CLK pin to D4, the shared clock line. Bridge on both boards of a stack; leave open on a single board |
+| JP1 | 1 (top-left corner) | bridge | chip select on D3 (board 1, or a single board) |
+| JP5 | 2 (top-right corner) | bridge | chip select on D7 (board 2) |
+| JP4 | DRDY | bridge | DRDY to D0. Board 1 or a single board only; leave open on board 2 |
+| JP2 | CLK | bridge | ADS1299 CLK pin to D1, the shared clock line. Bridge on both boards of a stack; leave open on a single board |
 | JP3 | EXT | bridge | CLKSEL to ground: external clock. Board 2 only. R5 (10 kΩ) holds CLKSEL high otherwise |
 
-| Setup | JP1 | JP4 | JP2 | JP3 |
-|---|---|---|---|---|
-| Single board | to 1 (D1) | bridged | open | open |
-| Stack, board 1 (clock master) | to 1 (D1) | bridged | bridged | open |
-| Stack, board 2 | to 2 (D3) | open | bridged | bridged |
+| Setup | JP1 | JP5 | JP4 | JP2 | JP3 |
+|---|---|---|---|---|---|
+| Single board | bridged (D3) | open | bridged | open | open |
+| Stack, board 1 (clock master) | bridged (D3) | open | bridged | bridged | open |
+| Stack, board 2 | open | bridged (D7) | open | bridged | bridged |
 
-- **Board 1 firmware:** set CLK_EN in CONFIG1 so board 1 drives its 2.048 MHz clock onto D4.
+- **Board 1 firmware:** set CLK_EN in CONFIG1 so board 1 drives its 2.048 MHz clock onto D1.
 - **Starting both boards together:** pull both CS lines low and send START (or SYNC). The two boards then convert in lockstep, and board 1's DRDY times both. Read board 1, then board 2, on the shared SPI bus.
-- **Don't drive D4 from the XIAO:** leave it as an input.
+- **Don't drive D1 from the XIAO:** leave it as an input.
 
 ## Second board in a stack
 
@@ -62,23 +86,24 @@ Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked wi
 - **Wiring:** link pins 13 and 14 between the boards, and make sure both boards' SRB1 lines reach the same reference electrode.
 - **Stacking headers:** J1/J2 on the lower board need long-tail stacking headers so the XIAO pins pass through.
 
-## XIAO pin use (ESP32-S3)
+## XIAO pin use
 
-| XIAO pin | ESP32-S3 GPIO | Signal |
-|---|---|---|
-| D0 | GPIO1 | MOSI (ADS DIN) |
-| D1 | GPIO2 | CS, board 1 (JP1 to 1) |
-| D2 | GPIO3 | SCK |
-| D3 | GPIO4 | CS, board 2 (JP1 to 2) |
-| D4 | GPIO5 | shared ADS clock (JP2) |
-| D9 | GPIO8 | MISO (ADS DOUT) |
-| D10 | GPIO9 | DRDY (JP4) |
-| 5V | n/a | AVDD (ADS analog 5 V) |
-| 3V3 | n/a | DVDD |
-| GND | n/a | GND |
+| XIAO pin | ESP32-S3 GPIO | nRF54L15 | Signal |
+|---|---|---|---|
+| D0 | GPIO1 | P1.04 | DRDY (JP4) |
+| D1 | GPIO2 | P1.05 | shared ADS clock (JP2) |
+| D3 | GPIO4 | P1.07 | CS, board 1 (JP1) |
+| D7 | GPIO44 | P2.07 | CS, board 2 (JP5) |
+| D8 | GPIO7 | P2.01 | SCK |
+| D9 | GPIO8 | P2.04 | MISO (ADS DOUT) |
+| D10 | GPIO9 | P2.02 | MOSI (ADS DIN) |
+| D2, D4, D5, D6 | | | not used; pass through the stacking headers (D4/D5 = I²C) |
+| 5V | n/a | n/a | AVDD (ADS analog 5 V) |
+| 3V3 | n/a | n/a | DVDD |
+| GND | n/a | n/a | GND |
 
-- **CS pull-up:** R1 (10 kΩ) sits on the ADS side of JP1, so an unbridged chip stays deselected.
-- **Arduino setup:** `SPI.begin(D2 /*SCK*/, D9 /*MISO*/, D0 /*MOSI*/)`, mode 1, with CS on D1 and D3 handled in code.
+- **CS pull-up:** R1 (10 kΩ) sits on the ADS side of the CS jumpers, so an unbridged chip stays deselected.
+- **Arduino setup:** `SPI.begin(D8 /*SCK*/, D9 /*MISO*/, D10 /*MOSI*/)`, mode 1, with CS on D3 and D7 handled in code.
 - **Power note:** AVDD comes from the XIAO's 5V pin. That pin is live only on USB, or when 5 V is fed into it.
 
 ## Inputs, reference, guard
@@ -101,23 +126,24 @@ R2 (1 MΩ) in parallel with C9 (1.5 nF C0G) sits between BIASINV and BIASOUT. Th
 | Pin | Connection |
 |---|---|
 | CLKSEL | R5 (10 kΩ) to DVDD; JP3 to ground for an external clock |
-| CLK | JP2 to D4 |
+| CLK | JP2 to D1 |
 | START | low (use the START command) |
 | RESET, PWDN | high |
 | DAISY_IN, RESV1 | ground |
-| GPIO1 | LED D1 through R4 (3.3 kΩ) |
+| GPIO4 | LED D1 through R4 (3.3 kΩ), active-low (anode on DVDD) |
+| GPIO1–3 | not connected |
 
 ## Assembly
 
-- **Top side (XIAO side):** C1–C10, R1–R3, R5. Bridge the jumpers for your setup (see the table above).
-- **Bottom side (ADS side):** U1, D1, R4, then J3.
+- **Top side (XIAO side):** C1–C10, R2–R5. Bridge the jumpers for your setup (see the table above).
+- **Bottom side (ADS side):** U1, D1, R1, then J3.
 - **Sockets:** J1/J2 go on last, as long-tail stacking headers on the lower board of a stack.
 
 ## Files
 
 | File | Contents |
 |---|---|
-| `XIAO_ADS1299_8ch_2L_R2.2.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
-| `XIAO_ADS1299_8ch_2L_R2.2` gerber/ | Gerbers and drill file |
-| `XIAO_ADS1299_8ch_2L_R2.2_BOM.csv` | Bill of materials, with notes for the 2nd board |
+| `XIAO_ADS1299_8ch_2L_R2.3.kicad_pcb` / `.kicad_pro` | KiCad 7 board and rules |
+| `XIAO_ADS1299_8ch_2L_R2.3` gerber/ | Gerbers and drill file |
+| `XIAO_ADS1299_8ch_2L_R2.3_BOM.csv` | Bill of materials, with notes for the 2nd board |
 | `plots/*_top_bottom.png`, `*_layers.png`, `*_via_check.png` | Both sides, copper by net, via check |

@@ -11,7 +11,7 @@ Each folder holds one board line at its latest revision. Earlier revisions are i
 | [`xiao_ads1298_addon`](xiao_ads1298_addon) | XIAO add-on | ADS1298 | 4 | R6.2 (history: R6) | 18-pin flex | Current |
 | [`lolin_ads1299`](lolin_ads1299) | LOLIN board, 8 ch | ADS1299 | 4 | R7.1 (history: R7) | 18-pin flex + 2×3 aux | Current |
 | [`lolin_ads1298`](lolin_ads1298) | LOLIN board, 8 ch | ADS1298 | 4 | R7.1 (history: R7) | 18-pin flex + 2×3 aux | Current |
-| [`xiao_ads1299_2L`](xiao_ads1299_2L) | XIAO shield, 8 ch, stackable | ADS1299 | 2 | R2.2 (history: R1, R2, R2.1) | 2×7 right-angle 2.54 mm | Current |
+| [`xiao_ads1299_2L`](xiao_ads1299_2L) | XIAO shield, 8 ch, stackable | ADS1299 | 2 | R2.3 (history: R1, R2, R2.1, R2.2) | 2×7 right-angle 2.54 mm | Current |
 | [`xiao_ad7771_4L`](xiao_ad7771_4L) | XIAO shield, 8 ch | AD7771 | 4 | A2 (history: A1) | 2×7 (R2 pinout) | Current |
 | [`xiao_ad7771_2L`](xiao_ad7771_2L) | XIAO board, 8 ch | AD7771 | 2 | A1.2 (history: A1, A1.1) | 2×7 (R2 pinout) | Weak guard; rework only if needed |
 
@@ -23,22 +23,22 @@ Every folder has the KiCad board (`.kicad_pcb`, `.kicad_pro`), its README, the B
 
 ## XIAO pin maps
 
-| XIAO | nRF54L15 | ADS1299/1298 main R5.2 | Add-on R6.2 | ADS1299 R2 / R2.1 / R2.2 | AD7771 A1/A2-4L | AD7771 2L A1 |
+| XIAO | nRF54L15 | ADS1299/1298 main R5.2 | Add-on R6.2 | ADS1299 2L R2.3 | AD7771 A1/A2-4L | AD7771 2L A1 |
 |---|---|---|---|---|---|---|
-| D0 | P1.04 | DRDY | — | MOSI | MISO | MOSI |
-| D1 | P1.05 | CLK pass-through | CLK pass-through | CS1 (JP1) | MOSI | CS1 |
-| D2 | P1.06 | PPG_INT | — | SCK | SCK | SCK |
-| D3 | P1.07 | CS | — | CS2 (JP1) | CS1 | CS2 |
-| D4 | P1.10 | SDA | — | shared ADS clock (JP2) | CS2 | MISO |
-| D5 | P1.11 | SCL | — | free | free | free |
+| D0 | P1.04 | DRDY | — | DRDY (JP4) | MISO | MOSI |
+| D1 | P1.05 | CLK pass-through | CLK pass-through | shared ADS clock (JP2) | MOSI | CS1 |
+| D2 | P1.06 | PPG_INT | — | free | SCK | SCK |
+| D3 | P1.07 | CS | — | CS1 (JP1) | CS1 | CS2 |
+| D4 | P1.10 | SDA | — | free (I²C) | CS2 | MISO |
+| D5 | P1.11 | SCL | — | free (I²C) | free | free |
 | D6 | P2.08 | free | — | free | free | free |
-| D7 | P2.07 | free | CS2 | free | free | MCLK |
-| D8 | P2.01 | SCK | SCK | free | RESET | RESET |
+| D7 | P2.07 | free | CS2 | CS2 (JP5) | free | MCLK |
+| D8 | P2.01 | SCK | SCK | SCK | RESET | RESET |
 | D9 | P2.04 | MISO | MISO | MISO | DRDY (JP2) | free |
-| D10 | P2.02 | MOSI | MOSI | DRDY (JP4) | MCLK | DRDY |
+| D10 | P2.02 | MOSI | MOSI | MOSI | MCLK | DRDY |
 
 - **Main R5.2 / add-on R6.2:** standard XIAO SPI on D8–D10, so they work on the XIAO ESP32-S3, nRF52840 and nRF54L15. On the nRF54L15 these are SPIM00's fixed high-speed pins (P2.01/P2.04/P2.02), which ESP32 boards can map anywhere but the nRF54L15 can't. DRDY is on P1, which supports interrupts. The ADS clock passes between boards on D1 (P1.05), which has no default peripheral, so D6/D7 stay free for the XIAO UART. With an add-on fitted, D7 is CS2, so disable `uart21` then.
-- **R2 / R2.1 / R2.2:** on the nRF54L15, SPI splits across ports 1 and 2, which may block hardware SPI. Check it with a Devicetree overlay, or move SPI to D8–D10 in a revision.
+- **2-layer R2.3:** same pin map as main R5.2 / add-on R6.2: SPI on D8–D10 (SPIM00 on the nRF54L15), DRDY D0, clock D1, CS D3/D7. R2–R2.2 used D0/D2/D9 for SPI, which splits across nRF54L15 ports.
 - **AD7771 4-layer:** on Nordic XIAOs, fit Y1, bridge JP3 and leave D10 as an input. The 8 MHz MCLK pin is on an nRF52840 low-frequency-only pin.
 - **ESP32-C3:** D0, D8 and D9 are boot-strapping pins.
 
@@ -46,7 +46,7 @@ nRF54L15 pin names are from [Seeed's XIAO nRF54L15 wiki](https://wiki.seeedstudi
 
 ## Shared output header on the 2×7 boards
 
-R2, R2.1, R2.2 and all AD7771 boards: pins 1–8 IN1–IN8, 9 SRB, 10 NC, 11 BIASOUT, 12 GUARD, 13 BIASINV, 14 GUARD. It carries no power or I2C; the sensor board takes those from the XIAO stack headers.
+R2–R2.3 and all AD7771 boards: pins 1–8 IN1–IN8, 9 SRB, 10 NC, 11 BIASOUT, 12 GUARD, 13 BIASINV, 14 GUARD. It carries no power or I2C; the sensor board takes those from the XIAO stack headers.
 
 ## Firmware channel remaps
 
