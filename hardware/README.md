@@ -5,13 +5,13 @@ Each folder holds one board line at its latest revision. Earlier revisions are i
 | Folder | Board | Chip | Layers | Latest | Inputs | Status |
 |---|---|---|---|---|---|---|
 | [`esp32_devkitc`](esp32_devkitc) | ESP32-DevKitC carrier | ADS1299 | 2 | (see its README) | electrode/5 V column | Not ready to fabricate |
-| [`xiao_ads1299_main`](xiao_ads1299_main) | XIAO main board, 8 ch | ADS1299 | 4 | R5 | 22-pin 0.5 mm FPC + 1×4 aux | Current |
-| [`xiao_ads1299_addon`](xiao_ads1299_addon) | XIAO add-on, ch 9–16 | ADS1299 | 4 | R6 (history: R4) | 22-pin 0.5 mm FPC + 1×4 aux | Current |
-| [`xiao_ads1298_main`](xiao_ads1298_main) | XIAO main board, 8 ch | ADS1298 | 4 | R5 | 22-pin FPC, WCT on pin 3 | Current |
-| [`xiao_ads1298_addon`](xiao_ads1298_addon) | XIAO add-on | ADS1298 | 4 | R6 | 22-pin FPC | Current |
+| [`xiao_ads1299_main`](xiao_ads1299_main) | XIAO main board, 8 ch | ADS1299 | 4 | R5.1 (history: R5) | 22-pin 0.5 mm FPC + 1×4 aux | Current |
+| [`xiao_ads1299_addon`](xiao_ads1299_addon) | XIAO add-on, ch 9–16 | ADS1299 | 4 | R6.1 (history: R4, R6) | 22-pin 0.5 mm FPC + 1×4 aux | Current |
+| [`xiao_ads1298_main`](xiao_ads1298_main) | XIAO main board, 8 ch | ADS1298 | 4 | R5.1 (history: R5) | 22-pin FPC, WCT on pin 3 | Current |
+| [`xiao_ads1298_addon`](xiao_ads1298_addon) | XIAO add-on | ADS1298 | 4 | R6.1 (history: R6) | 22-pin FPC | Current |
 | [`xiao_ads1299_2L`](xiao_ads1299_2L) | XIAO shield, 8 ch, stackable | ADS1299 | 2 | R2.1 (history: R1, R2) | 2×7 right-angle 2.54 mm | Current |
 | [`xiao_ad7771_4L`](xiao_ad7771_4L) | XIAO shield, 8 ch | AD7771 | 4 | A2 (history: A1) | 2×7 (R2 pinout) | Current |
-| [`xiao_ad7771_2L`](xiao_ad7771_2L) | XIAO board, 8 ch | AD7771 | 2 | A1 | 2×7 (R2 pinout) | Weak guard; rework only if needed |
+| [`xiao_ad7771_2L`](xiao_ad7771_2L) | XIAO board, 8 ch | AD7771 | 2 | A1.1 (history: A1) | 2×7 (R2 pinout) | Weak guard; rework only if needed |
 
 Every folder has the KiCad board (`.kicad_pcb`, `.kicad_pro`), its README, the BOM (and JLC BOM/CPL where made), `gerber/` and `plots/`.
 
@@ -52,6 +52,10 @@ R2, R2.1 and all AD7771 boards: pins 1–8 IN1–IN8, 9 SRB, 10 NC, 11 BIASOUT, 
 | AD7771 A1-4L | `[1, 0, 3, 2, 7, 6, 5, 4]` |
 | AD7771 2L A1 | `[2, 3, 0, 1, 4, 5, 6, 7]` |
 
+## Checking for vias on pads
+
+`tools/check_via_in_pad.py <board.kicad_pcb>` lists every via whose drill or ring touches a component pad, classed as exposed pad (expected), mounting tab, or part pad. Run it before ordering. KiCad's own design-rule check does not flag a via on a pad of the same net.
+
 ## Open items
 
 - [ ] Check R2's SPI pins on the nRF54L15 with a Devicetree overlay, or revise R2 to use D8–D10.
@@ -60,3 +64,4 @@ R2, R2.1 and all AD7771 boards: pins 1–8 IN1–IN8, 9 SRB, 10 NC, 11 BIASOUT, 
 - [ ] Consider the R2.1 guard filter (100 k + 2.2 µF) on the main R5 guard source (R7, currently 4.7 k with no filter capacitor).
 - [ ] Resume the touch-proof jack board, with the input protection resistors on it.
 - [ ] Add the missing revisions listed above from your drive.
+- [ ] R2.x: reroute CLKSEL near C8 so C8's ground via can leave its pad (see the R2.1 README).

@@ -1,5 +1,12 @@
 # XIAO-ADS1299 8-channel shield, 2-layer, R2.1 (stackable to two boards)
 
+## Known issue: via in C8's ground pad
+
+C8 (1 µF, top side) has a GND via drilled inside its ground pad at (3.2, −3.2). This via can't simply move: it also carries the ground for U1 pin 53 and joins the ground copper under the chip. Every nearby spot is blocked by C8's DVDD pad, the CLKSEL trace or R5, so fixing it needs a local reroute of CLKSEL. That's planned for the next R2 revision.
+
+- **Assembly:** before placing C8, tin its ground pad so the hole fills with solder, then solder C8 normally.
+- **No other via in R2.1 has its drill hole inside a pad.** The vias beside R3 and C10 touch the pad edge only.
+
 **R2.1 changes from R2:** guard filter only. Copper routing is unchanged.
 - **R3** is now **100 kΩ** (was 4.7 kΩ).
 - **C10 (new):** 2.2 µF X7R 0603 from GUARD to GND, on the top side at the edge of the guard pour.
