@@ -23,7 +23,8 @@ This is the same pin map as the 4-layer main R5.2 / add-on R6.2 boards, so one f
 - **R1 (CS pull-up)** is on the bottom side, top-left; R4 (LED resistor) is on the top side.
 - **LED:** D1 is driven by **GPIO4** (pin 46) and is **active-low**: its anode is on DVDD, so writing GPIO4 low turns it on. GPIO1's pin sits between SCK and MISO with no room for a via.
 - **Power:** AVDD comes from the 5 V pin on the bottom layer through the empty corner beside the chip, then down the inside of J2. DVDD comes straight from the 3V3 pin into pin 50, as before.
-- **Decoupling, under-chip fan-out, inputs and guard:** unchanged from R2.2, apart from C4 moving 0.4 mm left and C9 0.05 mm up.
+- **SRB2** no longer crosses the inputs on the top side. It runs on the bottom layer around the chip side of SRB1 and down past it to J3 pin 10, so the top-side guard over the input pins and traces is one continuous pour.
+- **Decoupling, under-chip fan-out and inputs:** unchanged from R2.2, apart from C4 moving 0.4 mm left and C9 0.05 mm up.
 
 The design-rule report has no clearance errors and nothing unconnected, `tools/check_via_in_pad.py` finds no via in any part pad, and every trace is straight or at 45°. The only notes are library-footprint notes and the solder-jumper outlines trimmed at their own pads.
 
@@ -57,7 +58,7 @@ Odd pins are on the inner row and even pins on the outer row. Pin 1 is marked wi
 
 - **Pins 9–12 changed from R1.** SRB2 moved to pin 10, BIASOUT to pin 11 and GUARD to pin 12. Pins 13 (BIASINV) and 14 (GUARD) are the new outer column.
 - **Splitting the header:** a 2×6 right-angle header on pins 1–12 plus a 1×2 right-angle on pins 13/14 fits the same holes. The 1×2 is the board-to-board link: BIASINV and GUARD.
-- **Silkscreen names (ADS side):** IN1–IN8; SR1/SR2 = SRB1/SRB2; BIA = BIASOUT; BI- = BIASINV; GRD = GUARD.
+- **Silkscreen names (ADS side, above row 1 and below row 2):** IN1–IN8; SR1/SR2 = SRB1/SRB2; BIA = BIASOUT; BI- = BIASINV; GRD = GUARD.
 
 ## Solder jumpers (top side, all ship open)
 
@@ -112,7 +113,7 @@ These are unchanged from R1, apart from routing.
 
 - **Negative inputs:** all eight are tied to SRB1 on the board.
 - **Positive inputs:** they run on the bottom layer with one 45° jog and no vias, under guard copper on both layers.
-- **SRB2:** it runs on the top layer inside the guard pour, between the header rows, to pin 10.
+- **SRB2:** it runs on the bottom layer on the chip side of the SRB1 comb, then down outside SRB1 and between J3 pins 9 and 11 to pin 10. No trace crosses the top-side guard over the inputs.
 - **BIASINV:** it runs on the top layer inside the guard pour to pin 13.
 - **Guard:** it is fed from BIASOUT through R3 (100 kΩ), filtered by C10 (2.2 µF) to ground, and stitched with 16 vias.
 - **Ground:** it is stitched with 17 vias.
