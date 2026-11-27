@@ -2301,7 +2301,7 @@
   (gr_text "C8 1u" (at 16.2 13.395) (layer "F.SilkS") (tstamp 109d5cef-082a-4cb9-aa51-cc3824a7ce4d)
     (effects (font (size 0.55 0.55) (thickness 0.15)))
   )
-  (gr_text "ADS1298 LOLIN R7" (at 12.7 6.7) (layer "F.SilkS") (tstamp 11370610-f8e9-4a5a-9396-0d5ec71bb2f5)
+  (gr_text "ADS1298 LOLIN R7.1" (at 12.7 6.7) (layer "F.SilkS") (tstamp 11370610-f8e9-4a5a-9396-0d5ec71bb2f5)
     (effects (font (size 0.45 0.45) (thickness 0.1)))
   )
   (gr_text "5" (at 18.4 17.86) (layer "F.SilkS") (tstamp 14052cbd-fe18-4c5b-a322-4fe535d20966)

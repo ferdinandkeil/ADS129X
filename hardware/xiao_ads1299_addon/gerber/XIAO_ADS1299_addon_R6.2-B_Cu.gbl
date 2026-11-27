@@ -1,12 +1,12 @@
 %TF.GenerationSoftware,KiCad,Pcbnew,7.0.11+dfsg-1build4*%
-%TF.CreationDate,2026-11-27T11:08:16-08:00*%
+%TF.CreationDate,2026-11-27T11:13:50-08:00*%
 %TF.ProjectId,XIAO_ADS1299_addon_R6.2,5849414f-5f41-4445-9331-3239395f6164,rev?*%
 %TF.SameCoordinates,Original*%
 %TF.FileFunction,Copper,L4,Bot*%
 %TF.FilePolarity,Positive*%
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW 7.0.11+dfsg-1build4) date 2026-11-27 11:08:16*
+G04 Created by KiCad (PCBNEW 7.0.11+dfsg-1build4) date 2026-11-27 11:13:50*
 %MOMM*%
 %LPD*%
 G01*
@@ -81,8 +81,10 @@ D10*
 X-7620000Y7620000D03*
 D11*
 %TO.P,J1,2*%
+%TO.N,CLK*%
 X-7620000Y5080000D03*
 %TO.P,J1,3*%
+%TO.N,N/C*%
 X-7620000Y2540000D03*
 %TO.P,J1,4*%
 X-7620000Y0D03*
@@ -91,7 +93,6 @@ X-7620000Y-2540000D03*
 %TO.P,J1,6*%
 X-7620000Y-5080000D03*
 %TO.P,J1,7*%
-%TO.N,CLK*%
 X-7620000Y-7620000D03*
 %TD*%
 D12*

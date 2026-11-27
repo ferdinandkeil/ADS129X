@@ -1,6 +1,6 @@
 # XIAO ADS1299 main board, 8 channels, R5.2 (18-pin flex inputs)
 
-**R5.2** is the 18-pin flex board with every via moved off component pads. Earlier revisions: R5 (22-pin), R5.1 (22-pin, not for order), R5 (18-pin). Board-to-board pinouts, parts and placement are unchanged.
+**R5.2** is the 18-pin flex board with every via moved off component pads. Earlier revisions: R5 (22-pin), R5.1 (22-pin, not for order), R5 (18-pin). Parts and placement are unchanged. **One pinout change:** the ADS clock between stacked boards moved from D6 to D1, and the silkscreen is relabelled to match. Main and add-on boards of the same revision must be used together.
 
 ## R5.2 changes: vias off pads
 A via on or touching a small pad can wick solder away from the joint. On 0.5 mm-pitch pins its ring can also bridge to the next pin.
@@ -39,9 +39,9 @@ The XIAO pins match every XIAO, including the nRF54L15, and SPI sits on that boa
 | D3 | P1.07 | CS (main) |
 | D7 | P2.07 | CS2 (add-on) |
 | D4 / D5 | P1.10 / P1.11 | I²C (`i2c22`), main board only |
-| D6 | P2.08 | ADS clock pass-through between stacked boards |
+| D1 | P1.05 | ADS clock pass-through between stacked boards (moved from D6 in this revision) |
 
-- **Disable `uart21` in firmware:** `&uart21 { status = "disabled"; };`. Zephyr turns it on by default on D6/D7, and its TX would drive the clock line on D6.
+- **D6 is free now.** The clock used to share D6 with the UART TX that Zephyr enables by default (`uart21`), so it moved to D1. With an add-on fitted, D7 is CS2, so disable `uart21` then: `&uart21 { status = "disabled"; };`.
 - **USB power only:** AVDD comes from the XIAO 5 V pin through FB1, and that pin carries no usable 5 V when the XIAO runs on battery alone.
 
 ## Inputs, aux header and guard

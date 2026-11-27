@@ -1,5 +1,9 @@
 # XIAO-AD7771 8-channel shield, 2-layer, A1
 
+## Revision A1.2: C12 via stub at 45°
+
+A1.2 redoes the A1.1 fix so the short AVDD trace to C12's via runs straight. The via now sits 0.6 mm from C12 pin 1 on a straight stub, at (4.8, 17.7). Nothing else changed, and the design-rule report is identical to A1.
+
 ## Revision A1.1: vias moved off component pads
 
 A1.1 changes only vias that sat on or touched component pads in A1. Solder can wick down such a via and starve the joint, and on 0.5 mm-pitch pins the via ring can bridge to the next pin.

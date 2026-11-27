@@ -1840,7 +1840,7 @@
   (gr_text "R2" (at 2.202762 5.116622 90) (layer "F.SilkS") (tstamp 83ea5506-18b1-4f0d-9086-97ab6ace3598)
     (effects (font (size 0.8 0.8) (thickness 0.15)))
   )
-  (gr_text "XIAO-ADS1299 8ch R2" (at 0 14.8) (layer "F.SilkS") (tstamp 8af04e96-e768-4899-bf01-515734a7c9b3)
+  (gr_text "XIAO-ADS1299 8ch R2.2" (at 0 14.8) (layer "F.SilkS") (tstamp 8af04e96-e768-4899-bf01-515734a7c9b3)
     (effects (font (size 0.8 0.8) (thickness 0.15)))
   )
   (gr_text "CS" (at -4.48 -8.25) (layer "F.SilkS") (tstamp 8cf00dcd-c3b7-4076-9031-ca89fa7f22ba)
