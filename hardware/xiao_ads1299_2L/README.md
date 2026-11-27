@@ -23,7 +23,7 @@ This is the same pin map as the 4-layer main R5.2 / add-on R6.2 boards, so one f
 - **R1 (CS pull-up)** is on the bottom side, top-left; R4 (LED resistor) is on the top side.
 - **LED:** D1 is driven by **GPIO4** (pin 46) and is **active-low**: its anode is on DVDD, so writing GPIO4 low turns it on. GPIO1's pin sits between SCK and MISO with no room for a via.
 - **Power:** AVDD comes from the 5 V pin on the bottom layer through the empty corner beside the chip, then down the inside of J2. DVDD comes straight from the 3V3 pin into pin 50, as before.
-- **SRB2** no longer crosses the inputs on the top side. It runs on the bottom layer around the chip side of SRB1 and down past it to J3 pin 10, so the top-side guard over the input pins and traces is one continuous pour.
+- **SRB2** no longer runs between the two J3 rows. On the top side it now passes just above row 1, around the far side of the SRB1 pin (9), and down between pins 9 and 11 into pin 10. The guard around the input pins is solid copper.
 - **Decoupling, under-chip fan-out and inputs:** unchanged from R2.2, apart from C4 moving 0.4 mm left and C9 0.05 mm up.
 
 The design-rule report has no clearance errors and nothing unconnected, `tools/check_via_in_pad.py` finds no via in any part pad, and every trace is straight or at 45°. The only notes are library-footprint notes and the solder-jumper outlines trimmed at their own pads.
@@ -113,7 +113,7 @@ These are unchanged from R1, apart from routing.
 
 - **Negative inputs:** all eight are tied to SRB1 on the board.
 - **Positive inputs:** they run on the bottom layer with one 45° jog and no vias, under guard copper on both layers.
-- **SRB2:** it runs on the bottom layer on the chip side of the SRB1 comb, then down outside SRB1 and between J3 pins 9 and 11 to pin 10. No trace crosses the top-side guard over the inputs.
+- **SRB2:** it runs on the top layer inside the guard pour, down from a via beside pin 18, along just above J3 row 1, around the SRB1 pin and between pins 9 and 11 to pin 10.
 - **BIASINV:** it runs on the top layer inside the guard pour to pin 13.
 - **Guard:** it is fed from BIASOUT through R3 (100 kΩ), filtered by C10 (2.2 µF) to ground, and stitched with 16 vias.
 - **Ground:** it is stitched with 17 vias.
