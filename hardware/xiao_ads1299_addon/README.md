@@ -1,6 +1,6 @@
 # XIAO ADS1299 add-on, channels 9–16, R6.2 (18-pin flex inputs)
 
-**R6.2** is the 18-pin flex board with every via moved off component pads. Earlier revisions: R4, R6 (22-pin), R6.1 (22-pin, not for order), R6 (18-pin). Parts and placement are unchanged. **One pinout change:** the ADS clock between stacked boards moved from D6 to D1, and the silkscreen is relabelled to match. Main and add-on boards of the same revision must be used together.
+**R6.2** is the 18-pin flex board with every via moved off component pads. Earlier revisions: R6. Parts and placement are unchanged. **One pinout change:** the ADS clock between stacked boards moved from D6 to D1, and the silkscreen is relabelled to match. Main and add-on boards of the same revision must be used together.
 
 ## R6.2 changes: vias off pads
 A via on or touching a small pad can wick solder away from the joint. On 0.5 mm-pitch pins its ring can also bridge to the next pin.

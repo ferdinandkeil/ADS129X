@@ -5,17 +5,17 @@ Each folder holds one board line at its latest revision. Earlier revisions are i
 | Folder | Board | Chip | Layers | Latest | Inputs | Status |
 |---|---|---|---|---|---|---|
 | [`esp32_devkitc`](esp32_devkitc) | ESP32-DevKitC carrier | ADS1299 | 2 | (see its README) | electrode/5 V column | Not ready to fabricate |
-| [`xiao_ads1299_main`](xiao_ads1299_main) | XIAO main board, 8 ch | ADS1299 | 4 | R5.2 (history: R5 22-pin, R5.1, R5 18-pin) | 18-pin 0.5 mm flex + 2×3 aux | Current |
-| [`xiao_ads1299_addon`](xiao_ads1299_addon) | XIAO add-on, ch 9–16 | ADS1299 | 4 | R6.2 (history: R4, R6 22-pin, R6.1, R6 18-pin) | 18-pin flex + 2×3 aux | Current |
-| [`xiao_ads1298_main`](xiao_ads1298_main) | XIAO main board, 8 ch | ADS1298 | 4 | R5.2 (history: R5 22-pin, R5.1, R5 18-pin) | 18-pin flex, WCT on pin 17 | Current |
-| [`xiao_ads1298_addon`](xiao_ads1298_addon) | XIAO add-on | ADS1298 | 4 | R6.2 (history: R6 22-pin, R6.1, R6 18-pin) | 18-pin flex | Current |
+| [`xiao_ads1299_main`](xiao_ads1299_main) | XIAO main board, 8 ch | ADS1299 | 4 | R5.2 (history: R5) | 18-pin 0.5 mm flex + 2×3 aux | Current |
+| [`xiao_ads1299_addon`](xiao_ads1299_addon) | XIAO add-on, ch 9–16 | ADS1299 | 4 | R6.2 (history: R6) | 18-pin flex + 2×3 aux | Current |
+| [`xiao_ads1298_main`](xiao_ads1298_main) | XIAO main board, 8 ch | ADS1298 | 4 | R5.2 (history: R5) | 18-pin flex, WCT on pin 17 | Current |
+| [`xiao_ads1298_addon`](xiao_ads1298_addon) | XIAO add-on | ADS1298 | 4 | R6.2 (history: R6) | 18-pin flex | Current |
 | [`lolin_ads1299`](lolin_ads1299) | LOLIN board, 8 ch | ADS1299 | 4 | R7.1 (history: R7) | 18-pin flex + 2×3 aux | Current |
 | [`lolin_ads1298`](lolin_ads1298) | LOLIN board, 8 ch | ADS1298 | 4 | R7.1 (history: R7) | 18-pin flex + 2×3 aux | Current |
 | [`xiao_ads1299_2L`](xiao_ads1299_2L) | XIAO shield, 8 ch, stackable | ADS1299 | 2 | R2.2 (history: R1, R2, R2.1) | 2×7 right-angle 2.54 mm | Current |
 | [`xiao_ad7771_4L`](xiao_ad7771_4L) | XIAO shield, 8 ch | AD7771 | 4 | A2 (history: A1) | 2×7 (R2 pinout) | Current |
 | [`xiao_ad7771_2L`](xiao_ad7771_2L) | XIAO board, 8 ch | AD7771 | 2 | A1.2 (history: A1, A1.1) | 2×7 (R2 pinout) | Weak guard; rework only if needed |
 
-The 18-pin flex, aux-header and guard design shared by the main, add-on and LOLIN boards is described in [`FLEX18.md`](FLEX18.md). R5.1/R6.1 were the 22-pin boards with vias moved; they're superseded and not for order.
+The 18-pin flex, aux-header and guard design shared by the main, add-on and LOLIN boards is described in [`FLEX18.md`](FLEX18.md).
 
 Every folder has the KiCad board (`.kicad_pcb`, `.kicad_pro`), its README, the BOM (and JLC BOM/CPL where made), `gerber/` and `plots/`.
 
