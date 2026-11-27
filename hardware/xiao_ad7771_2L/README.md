@@ -1,5 +1,19 @@
 # XIAO-AD7771 8-channel shield, 2-layer, A1
 
+## Revision A1.1: vias moved off component pads
+
+A1.1 changes only vias that sat on or touched component pads in A1. Solder can wick down such a via and starve the joint, and on 0.5 mm-pitch pins the via ring can bridge to the next pin.
+
+No circuit, part or placement changes, and the Gerbers are regenerated. The design-rule report is identical to the previous revision's: no new errors and nothing unconnected. `plots/*_via_check.png` shows pads and vias as outlines, before and after.
+
+- **"Clear":** the via now sits fully off the pad, joined by a short trace.
+- **"Drill clear":** the drill hole is fully off the pad, and the via ring still overlaps the pad slightly where there was no room for more. Vias are tented, so no solder reaches the hole.
+- **Not changed:** vias in J3's large mounting tabs are kept on purpose.
+
+| Pad | Net | Change |
+|---|---|---|
+| C12 pin 1 | AVDD | The op-amp supply via sat in C12's pad. Now clear, moved 0.6 mm. |
+
 **Board**
 - 20.3 × 41.5 mm, 2 layers.
 - OSH Park: about 1.31 sq in, so roughly $6.50 for three boards.

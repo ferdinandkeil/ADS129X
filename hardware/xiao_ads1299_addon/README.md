@@ -1,5 +1,22 @@
 # XIAO ADS1299 / ADS1298: main board R5 and add-on R6 (flex-cable inputs)
 
+## Revision R6.1: vias moved off component pads
+
+R6.1 changes only vias that sat on or touched component pads in R6. Solder can wick down such a via and starve the joint, and on 0.5 mm-pitch pins the via ring can bridge to the next pin.
+
+No circuit, part or placement changes, and the Gerbers are regenerated. The design-rule report is identical to the previous revision's: no new errors and nothing unconnected. `plots/*_via_check.png` shows pads and vias as outlines, before and after.
+
+- **"Clear":** the via now sits fully off the pad, joined by a short trace.
+- **"Drill clear":** the drill hole is fully off the pad, and the via ring still overlaps the pad slightly where there was no room for more. Vias are tented, so no solder reaches the hole.
+- **Not changed:** vias in J3's large mounting tabs are kept on purpose.
+
+| Pad | Net | Change |
+|---|---|---|
+| C3, C4, C5, C8, C9 | GND | Clear. |
+| C5 pin 1 | VCAP2 | Clear. |
+| C9 pin 1 | DVDD | Clear. |
+| J3 pin 22 | GUARD | Ring touched the pad. Now clear. |
+
 These replace the 2×14 / 2×11 J3 header with a **22-pin, 0.5 mm FPC connector** for the guarded inputs. A small **1×4 header** carries the bias and GPIO lines. Power, ground and I²C now reach the sensor shield through the stack headers, so they're gone from J3.
 
 | Board | Size | Layers | KiCad check |
