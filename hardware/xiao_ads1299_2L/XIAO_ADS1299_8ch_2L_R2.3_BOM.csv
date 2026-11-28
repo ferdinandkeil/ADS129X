@@ -1,0 +1,18 @@
+Refs,Qty,Value / part,Footprint,Side,Note
+C1 C3,2,10u,C_0805_2012Metric,Top (XIAO side),
+C2 C5 C6 C7,4,1u,C_0603_1608Metric,Top (XIAO side),
+C8,1,1u X5R 6.3 V+,C_0402_1005Metric,Top (XIAO side),
+C4,1,100u,C_1206_3216Metric,Top (XIAO side),
+C9,1,1.5 nF C0G 0603,C_0603_1608Metric,Top (XIAO side),Omit on the 2nd board of a stack
+C10,1,2.2u X7R 0603 (10 V or higher),C_0603_1608Metric,Top (XIAO side),GUARD to GND; filters the bias correction signal off the guard. Optional on the 2nd board of a stack (harmless either way)
+D1,1,LED 0603,LED_0603_1608Metric,Bottom (ADS side),Active-low: anode to DVDD; GPIO4 low turns it on (since R2.3)
+J1,1,1x7 2.54 mm socket/header for XIAO (D0-D6),PinHeader_1x07_P2.54mm_Vertical,Top (XIAO side),Long-tail stacking header if a 2nd board stacks on it
+J2,1,1x7 2.54 mm socket/header for XIAO (5V..D7),PinHeader_1x07_P2.54mm_Vertical,Top (XIAO side),Long-tail stacking header if a 2nd board stacks on it
+J3,1,2x7 2.54 mm right-angle pin header (or 2x6 RA on pins 1-12 + 1x2 RA on pins 13/14),PinHeader_2x07_P2.54mm_Horizontal,Bottom (ADS side),
+JP1-JP5,0,solder jumpers (no part),SJ2,Top (XIAO side),Ship open
+R1,1,10k,R_0603_1608Metric,Bottom (ADS side),CS pull-up (bottom side since R2.3)
+R2,1,1M,R_0603_1608Metric,Top (XIAO side),Omit on the 2nd board of a stack
+R3,1,100k,R_0603_1608Metric,Top (XIAO side),Guard feed from BIASOUT (with C10: ~0.7 Hz low-pass). Omit on the 2nd board of a stack
+R4,1,3.3k,R_0603_1608Metric,Top (XIAO side),LED resistor (top side since R2.3)
+R5,1,10k,R_0603_1608Metric,Top (XIAO side),CLKSEL pull-up
+U1,1,ADS1299IPAG (TQFP-64); ADS1299-6 also fits,TQFP-64_10x10mm_P0.5mm,Bottom (ADS side),

@@ -1,68 +1,42 @@
+// Referential EEG on the Teensy 3.6 / 4.0 / 4.1 + ADS1299 carrier.
+// Streams standard 33-byte OpenBCI packets (8 channels). An ADS1299-6,
+// which is the part on the photographed board, fills channels 7 and 8
+// with zero. The ID register selects 4, 6, or 8 when it reads back as
+// an ADS1299; otherwise the frame is 6 channels.
+//
+// Open the port at 115200 (Teensy USB ignores the number). The banner ends
+// with $$$. Send 'b' to start binary samples and 's' to stop. The OpenBCI
+// GUI scale assumes gain 24 and 4.5 V, which is what this sketch programs.
+//
+// Wiring is ADS1299Board in ADS129X.h. SPI is mode 1 on pins 11, 12, and 13.
+
 #include <ADS129X.h>
-#include <SPI.h>
 
-/* ADS129X pins */
-const int ADS_RESET  = 3;
-const int ADS_DRDY = 5;
-const int ADS_CS = 10;
+ADS129X ads(ADS1299Board::DRDY, ADS1299Board::CS, ADS1299Board::RESET,
+            ADS1299Board::PWDN, ADS1299Board::START);
 
-ADS129X ADS = ADS129X(ADS_DRDY, ADS_CS);
+static bool streaming = false;
 
 void setup() {
-  pinMode(ADS_RESET, OUTPUT);
+    Serial.begin(115200);
+    uint32_t started = millis();
+    while (!Serial && (millis() - started) < 2000) {
+    }
 
-  digitalWrite(ADS_RESET, HIGH);
-  delay(100); // delay for power-on-reset (Datasheet, pg. 48)
-  // reset pulse
-  digitalWrite(ADS_RESET, LOW);
-  digitalWrite(ADS_RESET, HIGH);
-  delay(1); // Wait for 18 tCLKs AKA 9 microseconds, we use 1 millisec
-
-  ADS.SDATAC(); // device wakes up in RDATAC mode, so send stop signal
-  ADS.WREG(ADS129X_REG_CONFIG1, ADS129X_SAMPLERATE_1024); // enable 8kHz sample-rate
-  ADS.WREG(ADS129X_REG_CONFIG3, (1<<ADS129X_BIT_PD_REFBUF) | (1<<6)); // enable internal reference
-  //ADS.WREG(ADS129X_REG_CONFIG2, (1<<ADS129X_BIT_INT_TEST) | ADS129X_TEST_FREQ_2HZ);
-
-  // setup channels
-  ADS.configChannel(1, false, ADS129X_GAIN_12X, ADS129X_MUX_NORMAL);
-  ADS.configChannel(2, false, ADS129X_GAIN_12X, ADS129X_MUX_NORMAL);
-  for (int i = 3; i <= 8; i++) {
-    ADS.configChannel(i, false, ADS129X_GAIN_1X, ADS129X_MUX_SHORT);
-  }
-
-  delay(1);
-  ADS.RDATAC();
-  ADS.START();
-
-  Serial.begin(1000000); // always at 12Mbit/s
-  Serial.println("Firmware v0.0.1");
+    ads.begin();
+    ads.configureReferential(ADS1299_GAIN_24, ADS1299_SAMPLERATE_250);
+    ads.printBanner(Serial);
 }
 
 void loop() {
-  long buffer[9];
-  static unsigned long tLast;
-  if (millis()-tLast > 500) {
-    // digitalWrite(LED3, !digitalRead(LED3));
-    tLast = millis();
-  }
-  if (ADS.getData(buffer)) {
-    unsigned long tStart = micros();
-    for (int channel = 1; channel < 9; channel++) {
-      /*if (channel == 8) {
-        buffer[channel] = micros()-tStart;
-      }*/
-      byte value[3];
-
-      // convert long to bytes
-      value[0] = (byte) (buffer[channel]>>16);
-      value[1] = (byte) (buffer[channel]>>8);
-      value[2] = (byte) (buffer[channel]);
-
-      Serial.write(value[0]);
-      Serial.write(value[1]);
-      Serial.write(value[2]);
-      
+    while (Serial.available()) {
+        ads.handleHostByte((uint8_t)Serial.read(), Serial, streaming);
     }
-  }
+    if (!streaming) {
+        return;
+    }
+    int32_t sample[9];
+    if (ads.getData(sample)) {
+        ads.sendOpenBciPacket(Serial, sample);
+    }
 }
-

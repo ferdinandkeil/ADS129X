@@ -1,0 +1,15 @@
+%TF.GenerationSoftware,KiCad,Pcbnew,8.0.9-8.0.9-0~ubuntu24.04.1*%
+%TF.CreationDate,2026-10-29T11:46:36+00:00*%
+%TF.ProjectId,ads1299_esp32_devkitc,61647331-3239-4395-9f65-737033325f64,rev?*%
+%TF.SameCoordinates,Original*%
+%TF.FileFunction,Legend,Bot*%
+%TF.FilePolarity,Positive*%
+%FSLAX46Y46*%
+G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
+G04 Created by KiCad (PCBNEW 8.0.9-8.0.9-0~ubuntu24.04.1) date 2026-10-29 11:46:36*
+%MOMM*%
+%LPD*%
+G01*
+G04 APERTURE LIST*
+G04 APERTURE END LIST*
+M02*
